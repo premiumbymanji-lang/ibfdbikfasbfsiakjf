@@ -1,0 +1,5188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>ShopApp – Premium Mobile Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     GLOBAL DESIGN SYSTEM
+     ============================================================ */
+  :root {
+    --bg-app: #F1F3F6;
+    --bg-card: #FFFFFF;
+    --text-primary: #212121;
+    --text-muted: #878787;
+    --text-success: #388E3C;
+    --action-yellow: #FFC200;
+    --action-orange: #FB641B;
+    --brand-blue: #2874F0;
+    --sale-blue: #28B2FF;
+    --border-subtle: #E0E0E0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  /* Disable text selection and tap highlights globally (native-app feel):
+     prevents the OS text-selection / copy / search popup on tap-and-hold */
+  * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Re-enable selection ONLY for inputs so users can still type and edit */
+  input, textarea {
+    -webkit-user-select: auto;
+    -khtml-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+  }
+
+  html, body {
+    background: #d8dce1;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+
+  /* ---- CRITICAL: Mobile-only app shell ---- */
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    background: var(--bg-app);
+    box-shadow: 0 0 12px rgba(0,0,0,.15);
+  }
+
+  button { font-family: inherit; cursor: pointer; border: none; }
+  a { text-decoration: none; color: inherit; }
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-card);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .header .h-left { display: flex; align-items: center; gap: 12px; }
+  .header .h-right { display: flex; align-items: center; gap: 18px; }
+  .logo-img {
+    height: 30px;
+    max-width: 120px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .icon-btn {
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 4px;
+  }
+  .icon-btn svg { width: 24px; height: 24px; stroke: var(--text-primary); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    background: #FF3B30;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* ---- PDP blue brand header ---- */
+  .header-blue {
+    background: var(--brand-blue);
+    height: auto;
+    min-height: 56px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  }
+  .header-blue .icon-btn svg { stroke: #fff; }
+
+  /* ============================================================
+     HOMEPAGE
+     ============================================================ */
+  .search-wrap { padding: 10px 12px; }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 11px 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+  .search-box svg { width: 18px; height: 18px; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; flex-shrink: 0; }
+  .search-box input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 14px;
+    font-family: inherit;
+    background: transparent;
+    color: var(--text-primary);
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+
+  /* ---- Search suggestions dropdown ---- */
+  .search-wrap { position: relative; }
+  .search-dd {
+    position: absolute;
+    top: calc(100% - 4px);
+    left: 12px;
+    right: 12px;
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.15);
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 80;
+  }
+  .search-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #F1F3F6;
+  }
+  .search-item:last-child { border-bottom: none; }
+  .search-item:active { background: #F1F3F6; }
+  .search-thumb {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .search-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .search-name { flex: 1; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-arrow { color: var(--text-muted); font-size: 14px; flex-shrink: 0; }
+  .search-empty { padding: 12px; font-size: 13px; color: var(--text-muted); text-align: center; }
+
+  /* ---- Delivery location bar (below header, above search) ---- */
+  .loc-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #FFFFFF;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .loc-bar svg { width: 16px; height: 16px; fill: #212121; stroke: none; flex-shrink: 0; }
+  .loc-not-set { color: #212121; font-weight: 500; }
+  .loc-select { color: #2874F0; font-weight: 600; padding-left: 2px; cursor: pointer; }
+  /* Truncate a saved address to one line so it never breaks the bar layout */
+  .loc-addr-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* ---- Category navigation (horizontal scroll, hidden scrollbar) ---- */
+  .cat-nav {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .cat-nav::-webkit-scrollbar { display: none; }
+  .cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 500;
+    color: #212121;
+    text-align: center;
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+  }
+  .cat-item.active {
+    color: var(--brand-blue);
+    font-weight: 600;
+    border-bottom-color: var(--brand-blue);
+  }
+  .cat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #F1F3F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cat-icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: #424242;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .hero {
+    height: 200px;
+    margin: 10px;
+    border-radius: 8px;
+    background: var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  /* ---- Sale banner: full-bleed poster image with overlaid timer ---- */
+  .sale-banner {
+    position: relative;
+    margin: 0 0 12px; /* gap before the product grid */
+    padding: 0;
+    width: 100%;
+    background: #082E6B;
+    overflow: hidden;
+    color: #fff;
+  }
+  .sale-poster { width: 100%; height: auto; display: block; }
+  /* Timer overlay: pinned bottom-right, scaled to ~1/4 visual area,
+     frosted glass so it reads over any poster artwork */
+  .sale-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    transform: scale(0.65);
+    transform-origin: bottom right;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  .sale-sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #212121; /* dark on the translucent white glass */
+    margin-bottom: 8px;
+  }
+  .sale-boxes { display: flex; justify-content: center; gap: 12px; }
+  .sale-box-wrap { display: flex; flex-direction: column; align-items: center; }
+  .sale-box {
+    background: #FFFFFF;
+    color: #212121;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    min-width: 45px;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .sale-box-label {
+    color: #212121; /* dark on the translucent white glass */
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin-top: 4px;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    background: var(--bg-app);
+    padding: 4px 0;
+  }
+
+  .product-card {
+    background: var(--bg-card);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .product-card .img-ph {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b0b0b0;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+  .product-card .p-title {
+    color: var(--text-primary);
+    /* 2-line clamp: long real product names truncate with an ellipsis
+       instead of breaking the grid layout */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .p-discount-row { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .p-discount { color: var(--text-success); font-weight: 600; }
+  .p-strike { color: var(--text-muted); text-decoration: line-through; }
+  .p-price-row { display: flex; align-items: center; gap: 6px; }
+  .p-price { font-weight: 700; font-size: 15px; }
+  /* ---- Logo slot next to price (drop logo file in as assured-logo.png) ---- */
+  .badge-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 17px;
+    background: transparent;
+    border-radius: 2px;
+    overflow: hidden;
+    transform: translateY(-1px);
+    flex-shrink: 0;
+  }
+  .badge-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .p-subtext { font-size: 11px; color: var(--text-primary); }
+
+  /* ============================================================
+     PRODUCT DETAILS PAGE
+     ============================================================ */
+  .pdp-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b0b0b0;
+    font-size: 14px;
+  }
+  .dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0; background: var(--bg-card); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #cfcfcf; }
+  .dot.active { background: var(--brand-blue); width: 14px; border-radius: 3px; }
+
+  .card-block {
+    background: var(--bg-card);
+    padding: 14px 16px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .pdp-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+  .pdp-highlights { list-style: disc; padding-left: 18px; }
+  .pdp-highlights li { font-size: 13px; padding: 3px 0; color: var(--text-primary); }
+
+  /* ---- PDP "Plus F-ASSURED" trust stamp ---- */
+  .fa-stamp { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+  .fa-stamp > svg { width: 22px; height: 22px; fill: var(--action-yellow); stroke: none; flex-shrink: 0; }
+  .fa-stamp-text { display: flex; flex-direction: column; line-height: 1; }
+  .fa-plus { color: var(--brand-blue); font-weight: 700; font-style: italic; font-size: 14px; }
+  .fa-sub { color: #878787; font-style: italic; font-weight: 600; font-size: 8px; letter-spacing: .6px; margin-top: 2px; }
+  .rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .rating-pill {
+    background: var(--text-success);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .rating-count { color: var(--text-muted); font-size: 13px; }
+  .pdp-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+  .pdp-price { font-size: 24px; font-weight: 700; }
+  .offers-list { list-style: none; margin-top: 8px; }
+  .offers-list li {
+    font-size: 13px;
+    padding: 4px 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .offers-list .tag { color: var(--text-success); font-weight: 700; flex-shrink: 0; }
+  .section-label { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+
+  /* ---- PDP offer countdown ---- */
+  .offer-timer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .offer-timer .time { color: var(--action-orange); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ---- PDP full-width promo image (edge-to-edge) ---- */
+  .promo-image {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: #E0E0E0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+
+  /* ---- Bottom sticky action bar (PDP) ---- */
+  .sticky-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 60;
+    display: flex;
+  }
+  .btn-half {
+    flex: 1 1 50%;
+    height: 52px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .btn-cart {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-top: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+  }
+  .btn-buy { background: var(--action-yellow); color: #000; }
+
+  /* ============================================================
+     CART PAGE
+     ============================================================ */
+  .empty-cart {
+    background: var(--bg-card);
+    min-height: calc(100vh - 56px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 36px;
+  }
+  .empty-cart svg { width: 96px; height: 96px; stroke: #cfcfcf; fill: none; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 24px; }
+  .empty-cart h2 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+  .empty-cart p { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 28px; }
+  .btn-blue {
+    background: var(--brand-blue);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 13px 44px;
+    border-radius: 4px;
+  }
+
+  .cart-block {
+    background: var(--bg-card);
+    margin-bottom: 8px;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .addr-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .addr-row .addr-label { font-size: 13px; color: var(--text-primary); font-weight: 500; }
+  .btn-outline-blue {
+    background: var(--bg-card);
+    border: 1px solid var(--brand-blue);
+    color: var(--brand-blue);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .cart-item { padding: 16px 16px 0; }
+  .cart-item + .cart-item { border-top: 1px solid var(--border-subtle); }
+  .cart-item-top { display: flex; gap: 14px; }
+  .cart-thumb-col { width: 90px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+  .cart-img {
+    width: 90px;
+    height: 90px;
+    background: #eaeaea;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b0b0b0;
+    font-size: 11px;
+  }
+  .qty-btn {
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .qty-select {
+    width: 100%;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-card);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+  }
+  .cart-img { cursor: pointer; }
+  .cart-item-info { flex: 1; min-width: 0; }
+  .cart-item-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .cart-actions { display: flex; border-top: 1px solid var(--border-subtle); margin-top: 16px; }
+  .cart-actions button {
+    flex: 1;
+    background: var(--bg-card);
+    padding: 14px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .cart-actions button + button { border-left: 1px solid var(--border-subtle); }
+
+  .price-block-inner { padding: 14px 16px; }
+  .dotted-sep { border-top: 1px dashed var(--border-subtle); margin: 8px 0; }
+  .save-banner {
+    background: #EAF9EF;
+    color: var(--text-success);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .trust {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .trust svg { width: 30px; height: 30px; stroke: var(--text-muted); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .info-i {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--text-muted);
+    border-radius: 50%;
+    font-size: 9px;
+    font-style: normal;
+    color: var(--text-muted);
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ============================================================
+     CHECKOUT FLOW
+     ============================================================ */
+  .stepper {
+    position: sticky;
+    top: 56px;
+    z-index: 40;
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--bg-app);
+    color: var(--text-muted);
+    border: 1.5px solid var(--text-muted);
+  }
+  .step-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+  .step.active .step-circle { background: var(--brand-blue); border-color: var(--brand-blue); color: #fff; }
+  .step.active .step-label { color: var(--brand-blue); }
+  .step-line { width: 24px; height: 1.5px; background: var(--border-subtle); }
+
+  /* ---- Address form ---- */
+  .address-form { background: var(--bg-card); padding: 8px 16px 90px; }
+  .form-field { border-bottom: 1px solid var(--border-subtle); padding: 12px 0 10px; }
+  .form-field label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+  }
+  .form-field input, .form-field select {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: transparent;
+    padding: 2px 0;
+  }
+  .form-row { display: flex; gap: 16px; }
+  .form-row .form-field { flex: 1; }
+
+  .sticky-bar-single { padding: 10px 12px; background: var(--bg-card); border-top: 1px solid var(--border-subtle); }
+  .btn-full-orange {
+    width: 100%;
+    height: 48px;
+    background: var(--action-orange);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 4px;
+  }
+  .btn-save {
+    width: 100%;
+    height: 48px;
+    background: #E0E0E0;
+    color: #616161;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 4px;
+  }
+  .btn-save.enabled { background: #FB641B; color: #fff; }
+  .field-err { display: none; color: red; font-size: 11px; margin-top: 2px; }
+
+  /* ---- Summary / Payment shared ---- */
+  .summary-thumb {
+    width: 72px;
+    height: 72px;
+    background: #eaeaea;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b0b0b0;
+    font-size: 10px;
+  }
+  .summary-item { display: flex; gap: 12px; }
+  .summary-item + .summary-item { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-subtle); }
+  .price-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .price-row .green { color: var(--text-success); }
+  .price-row.total {
+    border-top: 1px dashed var(--border-subtle);
+    margin-top: 8px;
+    padding-top: 12px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .checkout-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    z-index: 60;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    gap: 12px;
+  }
+  .checkout-bar .amount { font-size: 16px; font-weight: 700; }
+  .checkout-bar .amount small { display: block; font-size: 11px; color: var(--text-muted); font-weight: 500; }
+  .btn-yellow {
+    background: var(--action-yellow);
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    height: 46px;
+    padding: 0 34px;
+    border-radius: 4px;
+  }
+
+  /* ---- Payment options ---- */
+  .pay-option {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    margin: 8px 12px 0;
+    cursor: pointer;
+  }
+  .pay-option.selected { border-color: var(--brand-blue); box-shadow: 0 0 0 1px var(--brand-blue); }
+  .pay-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .pay-name { font-size: 15px; font-weight: 600; flex: 1; }
+  .radio-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--text-muted);
+    flex-shrink: 0;
+  }
+  .pay-option.selected .radio-dot { border-color: var(--brand-blue); box-shadow: inset 0 0 0 4px var(--brand-blue); }
+
+  /* ---- SCAN TO PAY: premium centered QR modal ---- */
+  .qr-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 2000; /* covers sticky headers, footers and bottom sheets */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr-card {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    padding: 24px 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .qr-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    padding: 6px;
+  }
+  .qr-close svg { width: 20px; height: 20px; stroke: var(--text-primary); fill: none; stroke-width: 2; stroke-linecap: round; }
+  .qr-title { font-size: 18px; font-weight: 600; color: #212121; margin-bottom: 4px; }
+  .qr-sub { font-size: 12px; color: #878787; margin-bottom: 16px; }
+  .qr-box {
+    width: 180px;
+    height: 180px;
+    background: #f0f0f0;
+    margin: 0 auto 16px;
+    display: block;
+  }
+  .qr-box img { width: 100%; height: 100%; display: block; }
+  .qr-expiry {
+    color: #F39C12;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+  .qr-wait-btn {
+    background: #FFC200;
+    color: #212121;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 14px;
+    border: none;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(255, 194, 0, 0.3);
+    pointer-events: none;
+  }
+
+  .page-pad-bottom { padding-bottom: 90px; }
+  .deliver-to { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
+  .deliver-to strong { color: var(--text-primary); font-size: 14px; }
+
+  /* ============================================================
+     ACCOUNT PAGE
+     ============================================================ */
+  .account-page { background: #F1F3F6; min-height: calc(100vh - 56px); padding-bottom: 60px; }
+  .login-banner {
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .login-banner span { color: #212121; font-size: 14px; font-weight: 500; }
+  .btn-login {
+    background: #2874F0;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 22px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .acct-section-title { font-size: 15px; font-weight: 700; color: var(--text-muted); padding: 16px 12px 8px; }
+  .acct-card { background: var(--bg-card); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+  .acct-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 12px;
+    border-bottom: 1px solid #E0E0E0;
+    cursor: pointer;
+  }
+  .acct-item:last-child { border-bottom: none; }
+  .acct-ic { display: flex; flex-shrink: 0; }
+  .acct-ic svg { width: 22px; height: 22px; stroke: var(--brand-blue); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .acct-text { flex: 1; min-width: 0; }
+  .acct-label { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .acct-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .acct-chev { display: flex; flex-shrink: 0; }
+  .acct-chev svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ============================================================
+     STICKY BOTTOM NAVIGATION BAR
+     ============================================================ */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    border-top: 1px solid #E0E0E0;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 100;
+  }
+  .bn-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #555;
+    background: none;
+  }
+  .bn-tab svg { width: 22px; height: 22px; stroke: #555; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .bn-tab.active { color: var(--brand-blue); }
+  .bn-tab.active svg { stroke: var(--brand-blue); }
+
+  /* ============================================================
+     CATEGORIES PAGE
+     ============================================================ */
+  .cat-round {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #F1F3F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .cat-round svg { width: 20px; height: 20px; stroke: #424242; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---- Two-column categories layout ---- */
+  .catv-wrap { display: flex; height: calc(100vh - 118px); overflow: hidden; }
+  .catv-side {
+    width: 25%;
+    flex-shrink: 0;
+    background: #F1F3F6;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-subtle);
+  }
+  .catv-tab {
+    padding: 12px 4px;
+    text-align: center;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+  }
+  .catv-tab.active { background: #fff; border-left: 4px solid #2874F0; }
+  .catv-ic {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    margin: 0 auto 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .catv-tab.active .catv-ic { background: #F1F3F6; }
+  .catv-ic svg { width: 22px; height: 22px; stroke: #424242; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .catv-tab span { display: block; font-size: 10px; font-weight: 500; color: var(--text-primary); line-height: 1.3; }
+  .catv-main { width: 75%; background: #FFFFFF; overflow-y: auto; padding: 10px; }
+  .catg-sec + .catg-sec { margin-top: 16px; }
+  .catg-head { font-size: 14px; font-weight: 700; margin: 4px 0 10px; }
+  .catg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .catg-cell { text-align: center; cursor: pointer; }
+  .catg-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .catg-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .catg-buy {
+    display: inline-block;
+    margin-top: 5px;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--text-success);
+    border-radius: 3px;
+    padding: 2px 6px;
+  }
+
+  /* ============================================================
+     SIDE MENU DRAWER (homepage hamburger)
+     ============================================================ */
+  .drawer-overlay {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 190;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+  }
+  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: max(0px, calc(50% - 240px));
+    width: 300px;
+    max-width: 84vw;
+    background: #fff;
+    z-index: 200;
+    transform: translateX(-110%);
+    transition: transform .28s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 12px rgba(0,0,0,.25);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head {
+    background: var(--brand-blue);
+    padding: 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .drawer-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 14px 14px 6px;
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 6px;
+  }
+  .drawer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .drawer-item:active { background: #F1F3F6; }
+  .drawer-item svg { width: 20px; height: 20px; stroke: #424242; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* ============================================================
+     LOGIN FLOW
+     ============================================================ */
+  .login-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--brand-blue);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 12px;
+  }
+  .login-header .icon-btn svg { stroke: #fff; }
+  .login-header .logo-img { margin: 0 auto; }
+  .login-body {
+    background: #fff;
+    min-height: calc(100vh - 56px);
+    padding: 0 20px 140px;
+  }
+  .login-title { font-size: 18px; font-weight: 700; color: #212121; padding-top: 20px; }
+  .login-sub { font-size: 14px; color: #878787; margin-top: 6px; margin-bottom: 30px; }
+  .float-field {
+    position: relative;
+    border: 1px solid #2874F0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 12px;
+  }
+  .float-field label {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    background: #fff;
+    padding: 0 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #2874F0;
+  }
+  .float-field .prefix { font-size: 15px; font-weight: 500; color: var(--text-primary); flex-shrink: 0; }
+  .float-field input {
+    border: none;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: transparent;
+  }
+  .login-alt { text-align: right; margin-top: 10px; font-size: 13px; font-weight: 600; color: #2874F0; cursor: pointer; }
+  .login-terms { margin-top: 40px; font-size: 12px; color: #878787; line-height: 1.6; }
+  .login-terms .blue { color: #2874F0; }
+  .login-cta-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    padding: 10px 12px;
+    border-top: 1px solid var(--border-subtle);
+    z-index: 100;
+  }
+  .btn-cta {
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 700;
+    background: #E0E0E0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+  }
+  .btn-cta.enabled { background: var(--action-orange); color: #fff; cursor: pointer; }
+  .login-err { color: #d32f2f; font-size: 12px; font-weight: 500; text-align: center; margin-bottom: 8px; }
+
+  /* ---- Logged-in account banner ---- */
+  .user-name { font-size: 16px; font-weight: 700; color: #212121; }
+  .user-phone { font-size: 13px; color: #878787; margin-top: 2px; }
+  .btn-logout {
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 4px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  /* ============================================================
+     HOMEPAGE PRICE TIMER PILL
+     ============================================================ */
+  .p-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #FFF0F0;
+    color: #FF6161;
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 10px;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .p-timer svg { width: 10px; height: 10px; stroke: #FF6161; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+
+  /* ============================================================
+     PDP: OFFERS / EMI / DELIVERY / TRUST / SIMILAR / REVIEWS
+     ============================================================ */
+  .pdp-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    margin: 8px 10px 0;
+    overflow: hidden;
+  }
+  .oa-head { background: #2874F0; color: #fff; font-size: 13px; font-weight: 700; padding: 11px 12px; }
+  .oa-body { background: #E7F1FF; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .oa-item { background: #fff; border-radius: 6px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .oa-item-title { font-size: 13px; font-weight: 600; }
+  .oa-item-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+  .oa-link { color: var(--brand-blue); font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+
+  .emi-row { display: flex; align-items: center; gap: 12px; padding: 12px; }
+  .emi-logo {
+    width: 44px; height: 28px; background: var(--action-yellow); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800; color: #212121; flex-shrink: 0;
+  }
+  .emi-title { font-size: 14px; font-weight: 600; flex: 1; }
+
+  .pdp-sec-head { font-size: 15px; font-weight: 600; padding: 12px 12px 4px; }
+  .dd-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.5; }
+  .dd-row svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .dd-ic-stroke svg { stroke: #424242; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .dd-ic-fill svg { fill: #424242; stroke: none; }
+  .dd-blue { color: var(--brand-blue); font-weight: 600; cursor: pointer; }
+
+  .trust-row { display: flex; justify-content: space-around; text-align: center; padding: 14px 8px; }
+  .trust-item { width: 33%; }
+  .trust-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #F1F3F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+  }
+  .trust-circle svg { width: 22px; height: 22px; stroke: #2874F0; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .trust-item span { display: block; font-size: 11px; font-weight: 500; color: #212121; line-height: 1.4; }
+
+  /* ---- Similar products carousel ---- */
+  .sim-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 4px; }
+  .sim-head svg { width: 18px; height: 18px; stroke: var(--text-primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sim-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 8px 12px 14px; scrollbar-width: none; -ms-overflow-style: none; }
+  .sim-scroll::-webkit-scrollbar { display: none; }
+  .sim-card { width: 128px; flex-shrink: 0; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px; cursor: pointer; background: #fff; }
+  .sim-img { width: 100%; aspect-ratio: 1 / 1; background: #eaeaea; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #b0b0b0; font-size: 11px; margin-bottom: 6px; }
+  .sim-title { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sim-price { font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+  /* ---- Ratings & reviews: edge-to-edge tall review graphic ---- */
+  .rr-section {
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 8px;
+    padding: 14px 16px 0;
+  }
+  .rr-head { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  /* Uniform 576x902 canvas: the wrapper does the edge-to-edge breakout
+     and locks the 576/902 aspect ratio on a WHITE background. The image
+     renders top-anchored at its natural scaled height, so any missing
+     height appears as white padding at the BOTTOM only — the top edge
+     never moves. Full-height (902) images fill the canvas exactly. */
+  .rr-hero {
+    margin-left: -16px;
+    margin-right: -16px;
+    width: calc(100% + 32px);
+    aspect-ratio: 576 / 902;
+    background: #fff;
+    overflow: hidden;
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .rr-hero img {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    height: auto !important; /* natural scaled height, anchored to the top */
+    display: block !important;
+  }
+
+  /* ============================================================
+     AUTO-SLIDING CAROUSELS (hero banner + PDP images)
+     ============================================================ */
+  .carousel { overflow: hidden; position: relative; width: 100%; }
+  .carousel-track {
+    display: flex;
+    transition: transform 0.4s ease-in-out;
+    width: 100%;
+    height: 100%;
+  }
+  .carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E0E0E0;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 15px;
+  }
+  /* Reuse the existing shells: unset their flex-centering so the
+     track can lay out horizontally inside them */
+  .hero.carousel {
+    display: block;
+    padding: 0;
+    /* Edge-to-edge with breathing room below before the sale poster */
+    margin: 0 0 12px;
+    width: 100%;
+    border-radius: 0;
+    /* No hardcoded height: the slider expands/contracts to match the
+       natural aspect ratio of the uploaded banner images */
+    height: auto;
+  }
+  .hero.carousel .carousel-slide { height: auto; background: var(--border-subtle); }
+  /* Once JS measures the banners and locks a shared height, taller
+     images are center-cropped: equal trim from top and bottom */
+  .hero.carousel.h-locked .carousel-slide { height: 100%; }
+  .hero.carousel.h-locked .carousel-slide img { height: 100%; object-fit: cover; object-position: center; }
+  .pdp-image.carousel { display: block; }
+  /* PDP product photos: fill the 1:1 slide with contain-fit so no
+     edges are cropped regardless of the source aspect ratio */
+  .pdp-image.carousel .carousel-slide { background: #fff; }
+  .pdp-image.carousel .carousel-slide img { width: 100%; height: 100%; object-fit: contain; }
+  .car-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.75);
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 5;
+  }
+  .car-btn.left { left: 8px; }
+  .car-btn.right { right: 8px; }
+  .car-btn svg { width: 18px; height: 18px; stroke: #212121; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .pdp-image.carousel .carousel-slide img { cursor: zoom-in; }
+
+  /* ============================================================
+     IMAGE ZOOM LIGHTBOX
+     ============================================================ */
+  .lightbox {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgba(0,0,0,.9);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  /* capped at the 480px shell width so nothing overflows on zoom */
+  .lightbox img {
+    max-width: min(94vw, 480px);
+    max-height: 86vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 6px;
+  }
+  .lb-close {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3001;
+    padding: 0;
+  }
+  .lb-close svg { width: 20px; height: 20px; stroke: #212121; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+
+  /* ============================================================
+     POST-PURCHASE: ORDERS / TRACKING / RETRY / SUCCESS
+     ============================================================ */
+  .order-card {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 12px;
+    cursor: pointer;
+  }
+  .order-thumb {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .order-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .order-info { flex: 1; min-width: 0; }
+  /* Status + arrow pinned to the absolute right of the card */
+  .order-right { margin-left: auto; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .order-status { font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+  .order-status.cancelled { color: #d32f2f; }
+  .order-name { font-size: 13px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .order-warn { margin-top: 4px; font-size: 11px; color: #d32f2f; font-weight: 600; }
+
+  /* Order details: segmented white cards on the grey page body */
+  .od-idbar { background: #fff; padding: 10px 12px; font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); }
+  .od-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin: 8px; overflow: hidden; }
+  .od-pad { padding: 12px; }
+
+  /* Payment-pending warning banner */
+  .pay-warn { background: #FCE8E8; border: 1px solid #F5C6C6; border-radius: 8px; margin: 8px; padding: 16px 12px; }
+  .pay-warn-head { display: flex; align-items: center; gap: 8px; color: #d32f2f; font-weight: 700; font-size: 14px; }
+  .pay-warn-sub { font-size: 12px; color: #555; margin: 8px 0 12px; line-height: 1.5; }
+  .btn-complete-pay { width: 100%; height: 44px; background: var(--brand-blue); color: #fff; font-size: 14px; font-weight: 700; border-radius: 4px; }
+  .pay-warn-note { margin-top: 10px; font-size: 11px; color: #64B5F6; line-height: 1.5; text-align: center; }
+
+  /* Open Box Delivery card */
+  .ob-head { display: flex; align-items: center; justify-content: space-between; padding: 12px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border-subtle); }
+  .ob-link { color: var(--brand-blue); font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+  .ob-row { display: flex; padding: 12px 8px; }
+  .ob-item { width: 33.33%; text-align: center; padding: 0 6px; }
+  .ob-ic { width: 36px; height: 36px; border-radius: 50%; background: #F1F3F6; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; }
+  .ob-ic svg { width: 18px; height: 18px; stroke: #424242; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .ob-item span { display: block; font-size: 10.5px; color: var(--text-primary); line-height: 1.4; }
+
+  /* Cancel / Need help split actions */
+  .od-actions { display: flex; }
+  .od-actions button { flex: 1; background: #fff; padding: 14px 4px; font-size: 13px; font-weight: 600; color: #555; }
+  .od-actions button + button { border-left: 1px solid var(--border-subtle); }
+
+  /* Bottom fluff cards */
+  .rate-stars { display: flex; gap: 10px; padding: 4px 12px 14px; }
+  .rate-stars svg { width: 26px; height: 26px; stroke: #B0B0B0; fill: none; stroke-width: 1.6; stroke-linejoin: round; }
+  .od-helpful { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; font-size: 13px; font-weight: 500; }
+  .od-helpful svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .paylater-banner {
+    height: 90px;
+    margin: 8px;
+    border-radius: 8px;
+    background: #E8F1FF;
+    border: 1px solid #CFE1FB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-blue);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* Order-cancelled success modal */
+  .cancel-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .cancel-card {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 340px;
+    padding: 22px 18px 18px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,.2);
+  }
+  .cancel-title { font-size: 16px; font-weight: 700; color: #212121; }
+  .cancel-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin: 10px 0 16px; }
+  .cancel-ok { width: 100%; height: 44px; background: var(--brand-blue); color: #fff; font-size: 14px; font-weight: 700; border-radius: 6px; }
+
+  /* Dynamic payment-verification status text (fades in) */
+  .pay-status {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #d32f2f;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .4s ease;
+  }
+  .pay-status.show { opacity: 1; margin-bottom: 8px; }
+  .pay-status .spinner { width: 14px; height: 14px; border-width: 2px; }
+
+  /* ============================================================
+     WINNER ANNOUNCEMENT TOAST
+     ============================================================ */
+  .winner-popup {
+    position: fixed;
+    bottom: 70px; /* just above the bottom nav with a small gap */
+    height: 36px; /* ~60% of the nav bar height */
+    /* 16px insets WITHIN the centered 480px shell */
+    left: max(16px, calc(50% - 224px));
+    right: max(16px, calc(50% - 224px));
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    /* deeper shadow for a floating feel + subtle brand border */
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    border: 1px solid rgba(40, 116, 240, 0.2);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    z-index: 2000; /* floats above all scrolling content */
+    overflow: hidden;
+    /* default: parked off-screen right */
+    transform: translateX(120%);
+    transition: transform 0.5s ease-out;
+  }
+  .winner-popup.slide-in { transform: translateX(0); }
+  .winner-popup.slide-out { transform: translateX(-120%); transition: transform 0.5s ease-in; }
+  .winner-badge {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+  .winner-badge img { width: 24px; height: 24px; object-fit: contain; display: block; }
+  .popup-text {
+    flex: 1;
+    font-size: 12px;
+    color: #212121;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .highlight-congrats { color: #2874F0; font-weight: 700; }
+  .highlight-amount { color: #388E3C; font-weight: 800; font-size: 13px; }
+
+  /* ============================================================
+     CONTENT PROTECTION (screenshot / recording deterrence)
+     ============================================================ */
+  /* Full-viewport frosted shield shown when visibility/focus is lost
+     or a capture attempt is detected */
+  .shield-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999; /* above every layer, incl. success overlay */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    text-align: center;
+  }
+  .shield-overlay.on { display: flex; }
+  /* Hard blur of the app content itself (backdrop-filter fallback) */
+  body.shielded #app {
+    filter: blur(14px);
+    pointer-events: none;
+  }
+  .shield-msg {
+    max-width: 320px;
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    font-size: 14px;
+    font-weight: 700;
+    color: #212121;
+  }
+  .shield-msg small { display: block; margin-top: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
+
+  /* CSS spinners */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: inline-block;
+    border-radius: 50%;
+    border: 2.5px solid rgba(0,0,0,.12);
+    animation: spin 1s linear infinite;
+  }
+  .spinner.red { border-top-color: #d32f2f; }
+  .spinner.blue { border-top-color: var(--brand-blue); }
+
+  /* Vertical order tracking stepper: absolute dotted connector sits
+     BEHIND the dots; markers have a white bg to mask the line */
+  .tl-wrap { position: relative; padding: 4px 12px 0; }
+  .tl-line {
+    position: absolute;
+    left: 20px;
+    top: 24px;
+    bottom: 24px;
+    border-left: 2px dotted #cfcfcf;
+    z-index: 0;
+  }
+  .tl-row { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: 14px; padding: 10px 0; }
+  .tl-marker {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .tl-dot-solid { width: 10px; height: 10px; border-radius: 50%; background: #cfcfcf; }
+  /* Cancelled step: solid red circle with a white X */
+  .tl-x {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #ff3333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 10px;
+    line-height: 1;
+  }
+  .tl-row.cancelled .tl-title { color: #ff3333; }
+  .tl-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .tl-row.active .tl-title { color: var(--brand-blue); }
+  .tl-warn { font-size: 11px; color: #d32f2f; font-weight: 600; margin-top: 3px; }
+  .tl-row.grey .tl-title { color: #9e9e9e; font-weight: 500; }
+  .tl-see-all { border-top: 1px solid var(--border-subtle); margin-top: 8px; padding: 12px; color: var(--brand-blue); font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* Order success animation: multi-stage.
+     Stage 1 (0-3s): green disc expands from dead center over white.
+     Stage 2: continuous check circle + ripple + breathe + flying stars.
+     Stage 3 (3s): green fades to pure white; text flips to dark. */
+  @keyframes greenExpand { 0% { transform: scale(0); } 100% { transform: scale(20); } }
+  @keyframes greenFadeOut { to { opacity: 0; } }
+  @keyframes ripple {
+    0%   { transform: translate(-50%, -50%) scale(.8); opacity: .6; }
+    100% { transform: translate(-50%, -50%) scale(2);  opacity: 0; }
+  }
+  @keyframes breathe {
+    0%   { transform: translate(-50%, -50%) scale(1); }
+    50%  { transform: translate(-50%, -50%) scale(1.15); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+  @keyframes starFly {
+    0%   { transform: translate(0, 0) scale(.4); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0; }
+  }
+  @keyframes textToDark { to { color: #212121; } }
+  @keyframes subToRed { to { color: #d32f2f; } }
+
+  .success-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: #fff; /* Stage 1 starts on a white screen */
+    z-index: 4000; /* above lightbox, QR modal and sticky bars */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  /* Lives INSIDE .success-graphic so it expands from the exact center
+     of the green checkmark circle */
+  .success-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    margin: -60px 0 0 -60px;
+    border-radius: 50%;
+    background: #15a85e;
+    transform-origin: center center;
+    z-index: 0;
+    /* expand 0-3s ease-out, then fade back to white at exactly 3s */
+    animation: greenExpand 3s ease-out forwards, greenFadeOut .8s ease-out 3s forwards;
+  }
+  /* Large solid white circle base: perfectly centered behind the
+     checkmark circle (inside .success-graphic). transform-origin and
+     the animation duration/timing EXACTLY match the green disc, so
+     both expand outward from the checkmark center at the same speed. */
+  @keyframes baseExpand { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+  .success-base {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    height: 250px;
+    margin: -125px 0 0 -125px;
+    border-radius: 50%;
+    background: #fff;
+    transform-origin: center center;
+    z-index: 1;
+    transform: scale(0);
+    /* fast pop: expands out in 1s while the green keeps growing */
+    animation: baseExpand 1s ease-out forwards;
+  }
+  .success-graphic {
+    position: relative;
+    z-index: 2;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Sync: the tick circle + ripple/breathe layers + stars scale in
+       together with the white base (fast 1s ease-out pop) while the
+       green disc continues expanding to full screen behind them */
+    transform: scale(0);
+    animation: baseExpand 1s ease-out forwards;
+  }
+  /* Ripple / breathe / stars sit ABOVE the white base (z-index 1) so
+     the looping green animations stay visible on top of it */
+  .success-graphic .breathe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(21, 168, 94, .28);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    animation: breathe 2s ease-in-out infinite;
+  }
+  .success-graphic .ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(21, 168, 94, .22);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    animation: ripple 1.8s ease-out infinite;
+  }
+  .success-graphic .star {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    fill: #15a85e;
+    stroke: none;
+    opacity: 0;
+    z-index: 3;
+    animation: starFly 2s ease-out infinite;
+  }
+  .success-graphic .star.s1 { --tx: -70px; --ty: -55px; animation-delay: 0s; }
+  .success-graphic .star.s2 { --tx: 75px;  --ty: -35px; animation-delay: .5s; }
+  .success-graphic .star.s3 { --tx: 15px;  --ty: 75px;  animation-delay: 1s; }
+  .success-check {
+    position: relative;
+    z-index: 4; /* topmost: above base, ripple/breathe and stars */
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 18px rgba(0,0,0,.15); /* stays visible on white */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .success-check svg { width: 40px; height: 40px; stroke: #15a85e; fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  /* Stage 3: text flips from white to dark exactly when green fades */
+  @keyframes fadeInText { to { opacity: 1; } }
+  .success-title {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    /* fades in while the green covers the screen, flips dark at 3s */
+    opacity: 0;
+    animation: fadeInText .6s ease 1.2s forwards, textToDark .5s ease 3s forwards;
+  }
+  .success-sub {
+    position: relative;
+    z-index: 2;
+    margin-top: 6px;
+    color: #FFC0CB;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeInText .6s ease 1.4s forwards, subToRed .5s ease 3s forwards;
+  }
+
+  /* ============================================================
+     REUSABLE TRUST BADGE (cart / summary / payment)
+     ============================================================ */
+  .trust-badge {
+    background-color: #F1F3F6;
+    padding: 16px;
+    border-top: 1px solid #E0E0E0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .trust-badge svg { fill: #878787; width: 24px; height: 24px; flex-shrink: 0; }
+  .trust-badge span { color: #878787; font-size: 12px; line-height: 1.4; font-weight: 500; }
+
+  /* ---- Hero banner slide images: full width, proportional scaling,
+     never cropped (no fixed height anywhere in the chain) ---- */
+  .carousel-slide img { width: 100%; height: auto; display: block; }
+
+  /* ---- Payment page UPI logos: fixed 36px box + contain-fit image
+     so every logo appears the same size regardless of source dims ---- */
+  .pay-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .pay-logo img { width: 28px; height: 28px; object-fit: contain; display: block; }
+
+  /* ============================================================
+     GLOBAL PRODUCT THUMBNAILS (real photos in the old grey boxes)
+     ============================================================ */
+  /* Homepage grid cards */
+  .product-card .img-ph { background: #fff; }
+  .product-card .img-ph img { width: 100%; height: 100%; object-fit: contain; background: #fff; mix-blend-mode: multiply; display: block; }
+  /* Cart list thumbnails (90px box, dims unchanged) */
+  .cart-img { background: #fff; border: 1px solid var(--border-subtle); }
+  .cart-img img { width: 100%; height: 100%; object-fit: contain; background: #ffffff; border-radius: 4px; flex-shrink: 0; display: block; }
+  /* Order Summary thumbnails (72px box, dims unchanged) */
+  .summary-thumb { background: #fff; border: 1px solid var(--border-subtle); }
+  .summary-thumb img { width: 100%; height: 100%; object-fit: contain; background: #ffffff; border-radius: 4px; flex-shrink: 0; display: block; }
+  /* Similar Products + Customers-also-bought mini cards */
+  .sim-img { background: #fff; }
+  .sim-img img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: #ffffff; mix-blend-mode: multiply; border-radius: 4px 4px 0 0; display: block; }
+
+  /* ---- UNIFORM SQUARE PRODUCT IMAGES ----
+     Most photos are 784x784 but some are irregular (616x784,
+     784x762...). Force every product image element into an identical
+     1:1 square: contain-fit centers the photo and the missing width/
+     height is filled with symmetric solid white. */
+  .product-card .img-ph img,
+  .pdp-image.carousel .carousel-slide img,
+  .cart-img img,
+  .summary-thumb img,
+  .sim-img img {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    object-fit: contain;
+    background-color: #FFFFFF;
+    display: block;
+  }
+
+  /* ============================================================
+     ADD-TO-CART BOTTOM SHEET
+     ============================================================ */
+  .sheet-overlay {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease-out;
+  }
+  .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+  .cart-sheet {
+    position: fixed;
+    bottom: -100%;
+    left: 50%;
+    transform: translateX(-50%); /* centers the sheet within the 480px shell */
+    width: 100%;
+    max-width: 480px;
+    background: white;
+    z-index: 1000; /* above sticky action bars (60) and bottom nav (100) */
+    transition: bottom 0.3s ease-out;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    padding: 16px;
+  }
+  .cart-sheet.open { bottom: 0; }
+  .sheet-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .sheet-head svg.check { width: 22px; height: 22px; stroke: #388E3C; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .sheet-title { font-size: 15px; font-weight: 700; color: #388E3C; flex: 1; }
+  .sheet-close { background: none; padding: 4px; }
+  .sheet-close svg { width: 20px; height: 20px; stroke: var(--text-primary); fill: none; stroke-width: 2; stroke-linecap: round; }
+  .sheet-sub { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .sheet-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; -ms-overflow-style: none; }
+  .sheet-scroll::-webkit-scrollbar { display: none; }
+  .btn-view-cart {
+    width: 100%;
+    height: 46px;
+    background: #FFC200;
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 4px;
+  }
+
+  /* ============================================================
+     PAGE TRANSITION ANIMATION
+     ============================================================ */
+  @keyframes pageEnter {
+    0% {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-page-enter {
+    animation: pageEnter 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   MOCK DATABASE — 60 products (numeric prices enable dynamic totals)
+   All 60 slots carry real catalogue data; the generator below still
+   provides placeholder fallbacks for any future empty slots.
+   ============================================================ */
+const REAL_PRODUCTS = [
+  {
+    name: 'TRIGGR Kraken X4 with 13mm Drivers, 40ms Latency, ENC, 60H Battery, Rubber Finish, v5.4 Bluetooth',
+    priceNum: 899,
+    originalPriceNum: 3999,
+    discount: '78% Off',
+    rating: '4.0',
+    reviews: '58,091',
+    details: [
+      '13mm Dynamic Drivers',
+      '40ms Low Latency Gaming Mode',
+      'ENC for clear calls',
+      'Up to 60 Hours Battery Life',
+      'Premium Rubber Finish with v5.4 Bluetooth'
+    ]
+  },
+  {
+    name: 'GOBOULT Mustang Dyno 60Hrs, Dual Pairing, App Support, 4 Mic ENC, 5.4v Bluetooth',
+    priceNum: 1299,
+    originalPriceNum: 4999,
+    discount: '74% Off',
+    rating: '4.1',
+    reviews: '2,07,300',
+    details: [
+      '60 Hours Battery Life',
+      'Dual device connectivity & BT 5.4',
+      'Quad Mic ENC for clear calls',
+      'Boult AMP App Support',
+      'IPX5 Water Resistance'
+    ]
+  },
+  {
+    name: 'TRIGGR Wukong 35dB ANC, 4-mic ENC, Dual Pairing, 60H Battery, Monkey-king Design, v6.0 Bluetooth Gaming',
+    priceNum: 1499,
+    originalPriceNum: 4999,
+    discount: '70% Off',
+    rating: '4.2',
+    reviews: '8,500',
+    details: [
+      '35dB Active Noise Cancellation (ANC)',
+      '4-Mic ENC for crystal clear calls',
+      '60 Hours Battery Backup',
+      'Bluetooth v6.0 Gaming mode',
+      'Unique Monkey-king Design'
+    ]
+  },
+  {
+    name: 'HOPPUP Xo6 Gaming Earbuds with 35MS Low Latency, RGB LED, 13MM DRIVERS & 50H PlayTime',
+    priceNum: 799,
+    originalPriceNum: 4999,
+    discount: '84% Off',
+    rating: '4.1',
+    reviews: '12,800',
+    details: [
+      '35MS Ultra Low Latency for Gaming',
+      'RGB LED aesthetics',
+      '13MM Dynamic Drivers',
+      '50 Hours PlayTime'
+    ]
+  },
+  {
+    name: 'Mivi DuoPods K2 with 40Hrs Playtime, HD Call, Fast Charging, 50ms Latency, IPX4, v5.3 Bluetooth',
+    priceNum: 699,
+    originalPriceNum: 2999,
+    discount: '76% Off',
+    rating: '4.2',
+    reviews: '45,210',
+    details: [
+      '40 Hours Playtime with Fast Charging',
+      'HD Call clarity',
+      '50ms Low Latency',
+      'IPX4 Water Resistance',
+      'Voice Assistant Support & BT v5.3'
+    ]
+  },
+  {
+    name: 'GOBOULT W20 with ENC Mic, 40Hrs Battery Life, Low Latency Gaming, v5.3 Bluetooth',
+    priceNum: 899,
+    originalPriceNum: 2499,
+    discount: '64% Off',
+    rating: '4.0',
+    reviews: '12,450',
+    details: [
+      '40 Hours Battery Life',
+      'ENC Mic for Environmental Noise Cancellation',
+      'Low Latency Gaming Mode',
+      'Bluetooth v5.3'
+    ]
+  },
+  {
+    name: 'Motorola Buds 2 with 6Mic, 55dB ANC, 11.6mm Dual Drivers, 53 Hours Battery, Hi-Res Audio, IP54 Bluetooth',
+    priceNum: 2799,
+    originalPriceNum: 5999,
+    discount: '53% Off',
+    rating: '4.4',
+    reviews: '8,300',
+    details: [
+      '55dB Active Noise Cancellation (ANC)',
+      '11.6mm Dual Drivers with Hi-Res Audio',
+      '6-Mic System for premium calls',
+      'Up to 53 Hours Battery Backup',
+      'IP54 Rating'
+    ]
+  },
+  {
+    name: 'realme Buds T110 (RMA2306) with AI ENC Calls, 38 Hours Playback, Deep Bass Bluetooth',
+    priceNum: 1499,
+    originalPriceNum: 2999,
+    discount: '50% Off',
+    rating: '4.3',
+    reviews: '1,12,000',
+    details: [
+      'AI ENC for clear calls',
+      'Up to 38 Hours Playback time',
+      'Deep Bass delivery',
+      'Fast pairing Bluetooth'
+    ]
+  },
+  {
+    name: 'HAMMER Airflow Neo Earbuds with 80H Playtime, 13mm Titanium Driver, 40ms Gaming Mode Bluetooth',
+    priceNum: 599,
+    originalPriceNum: 2499,
+    discount: '76% Off',
+    rating: '3.9',
+    reviews: '22,100',
+    details: [
+      'Massive 80 Hours Playtime',
+      '13mm Titanium Drivers for punchy sound',
+      '40ms Ultra Low Latency Gaming Mode'
+    ]
+  },
+  {
+    name: 'NUMBER Super Buds Pro GT99 Dual Pair, 4 Mic ENC, Gaming RGB TWS, 35ms Latency, 50H Battery Bluetooth',
+    priceNum: 899,
+    originalPriceNum: 3999,
+    discount: '77% Off',
+    rating: '4.1',
+    reviews: '6,700',
+    details: [
+      'Gaming RGB Aesthetics',
+      '35ms Low Latency',
+      '4-Mic ENC & Dual Pairing',
+      '50 Hours Battery Life'
+    ]
+  },
+  {
+    name: 'TRIGGR Raptor with 30ms Low Latency, Rapid Pairing, 4 Mic ENC, Spaceship Design, 50H Battery Bluetooth',
+    priceNum: 1299,
+    originalPriceNum: 3999,
+    discount: '67% Off',
+    rating: '4.2',
+    reviews: '18,900',
+    details: [
+      'Unique Spaceship Design',
+      '30ms Super Low Latency',
+      '4-Mic ENC for crystal clear calls',
+      'Rapid Pairing & 50 Hours Battery'
+    ]
+  },
+  {
+    name: 'Zebronics Zeb-Jet Pro Premium Headphone with LED, Headband Suspension Design, 2 Mtr 3.5mm/USB Wired Gaming',
+    priceNum: 888,
+    originalPriceNum: 1999,
+    discount: '55% Off',
+    rating: '4.1',
+    reviews: '34,500',
+    details: [
+      'Premium Wired Gaming Headphone',
+      'LED Lighting & Headband Suspension Design',
+      '2 Meter braided cable',
+      'Dual 3.5mm & USB interface'
+    ]
+  },
+  {
+    name: 'TRIGGR Trinity 3 Fabric Finish, Dual Pairing, 50H Battery, Foldable Design, v5.3 Bluetooth Headphone',
+    priceNum: 1199,
+    originalPriceNum: 3999,
+    discount: '70% Off',
+    rating: '4.1',
+    reviews: '12,450',
+    details: [
+      'Premium Fabric Finish',
+      'Dual Pairing support',
+      '50 Hours Battery Life',
+      'Foldable Design for portability',
+      'Bluetooth v5.3'
+    ]
+  },
+  {
+    name: 'DAWG Headbug G60 Wireless Gaming, 60H Backup, 20ms Low Latency, 2.4GHz + BT v5.4',
+    priceNum: 2999,
+    originalPriceNum: 7999,
+    discount: '62% Off',
+    rating: '4.3',
+    reviews: '8,900',
+    details: [
+      '20ms Ultra-Low Latency for Gaming',
+      '2.4GHz Wireless Dongle + Bluetooth v5.4',
+      '60 Hours Battery Backup',
+      'Professional Gaming Headset'
+    ]
+  },
+  {
+    name: 'HAMMER Blaze Gaming Headphones with Mic, Stereo 7.1 Sound, RGB Lights, Wired',
+    priceNum: 1799,
+    originalPriceNum: 4999,
+    discount: '64% Off',
+    rating: '4.2',
+    reviews: '15,200',
+    details: [
+      'Immersive 7.1 Stereo Sound',
+      'Built-in Microphone for clear comms',
+      'Dynamic RGB Lighting',
+      'Wired connection for zero latency'
+    ]
+  },
+  {
+    name: 'JBL Quantum 100 Wired Over Ear Gaming Headphones with Detachable Mic',
+    priceNum: 1999,
+    originalPriceNum: 3999,
+    discount: '50% Off',
+    rating: '4.3',
+    reviews: '45,600',
+    details: [
+      'JBL QuantumSOUND Signature',
+      'Detachable voice focus directional boom mic',
+      'Memory foam ear cushions',
+      'Compatible with all platforms'
+    ]
+  },
+  {
+    name: 'Ant Esports H520W World War Ship Licensed Wired Gaming Headset',
+    priceNum: 919,
+    originalPriceNum: 2499,
+    discount: '63% Off',
+    rating: '4.0',
+    reviews: '9,800',
+    details: [
+      'Official World War Ship Licensed Design',
+      'High-sensitivity mic',
+      'Comfortable over-ear fit',
+      'Universal 3.5mm compatibility'
+    ]
+  },
+  {
+    name: 'SpinBot BattleBudz C10 Type-C Gaming Earphones with Boom Mic Wired',
+    priceNum: 682,
+    originalPriceNum: 1499,
+    discount: '54% Off',
+    rating: '4.1',
+    reviews: '6,500',
+    details: [
+      'Type-C connection for modern devices',
+      'Detachable Boom Mic for gaming',
+      'In-ear ergonomic fit',
+      'Powerful bass response'
+    ]
+  },
+  {
+    name: 'ShreeVistaar Travel Wireless Headset Built-in Mic Bluetooth',
+    priceNum: 426,
+    originalPriceNum: 1999,
+    discount: '78% Off',
+    rating: '3.5',
+    reviews: '1,200',
+    details: [
+      'Wireless Bluetooth connectivity',
+      'Built-in Microphone',
+      'Over-ear travel design',
+      'Lightweight frame'
+    ]
+  },
+  {
+    name: 'Yadav Sons Empire P9 Headphone Bluetooth',
+    priceNum: 439,
+    originalPriceNum: 1999,
+    discount: '78% Off',
+    rating: '3.6',
+    reviews: '1,450',
+    details: [
+      'P9 Style Wireless Headphone',
+      'Bluetooth connectivity',
+      'On-ear media controls',
+      'Rechargeable battery'
+    ]
+  },
+  {
+    name: 'Apple EarPods with USB-C Wired',
+    priceNum: 1749,
+    originalPriceNum: 2000,
+    discount: '12% Off',
+    rating: '4.6',
+    reviews: '85,000',
+    details: [
+      'Official Apple Accessory',
+      'USB-C Connector',
+      'Deeper, richer bass tones',
+      'Greater protection from sweat and water'
+    ]
+  },
+  {
+    name: 'Apple AirPods Pro (2nd generation) Bluetooth',
+    priceNum: 24990,
+    originalPriceNum: 24990,
+    discount: '0% Off',
+    rating: '4.8',
+    reviews: '1,20,000+',
+    details: [
+      'H2 Apple Silicon',
+      'Up to 2x more Active Noise Cancellation',
+      'Adaptive Transparency',
+      'Personalized Spatial Audio'
+    ]
+  },
+  {
+    name: 'Apple AirPods 4 Wireless Earbuds with Active Noise Cancellation, Adaptive Audio',
+    priceNum: 16900,
+    originalPriceNum: 17900,
+    discount: '5% Off',
+    rating: '4.7',
+    reviews: '12,500',
+    details: [
+      'Active Noise Cancellation',
+      'Adaptive Audio & Conversation Awareness',
+      'H2 Chip processing',
+      'USB-C Charging Case'
+    ]
+  },
+  {
+    name: 'CMF by Nothing Buds 2a, 42 dB ANC, 12.4mm Driver, Dirac Tuned, Ultra Bass, 35.5 hrs Bluetooth',
+    priceNum: 1999,
+    originalPriceNum: 3499,
+    discount: '42% Off',
+    rating: '4.4',
+    reviews: '28,300',
+    details: [
+      '42 dB Active Noise Cancellation',
+      '12.4mm Dynamic Drivers',
+      'Dirac Tuned Audio with Ultra Bass Tech',
+      '35.5 Hours total playtime'
+    ]
+  },
+  {
+    name: 'CMF by Nothing Buds 2, 48 dB Hybrid ANC, Ultra Bass Tech 2.0, 55 Hrs Playtime Bluetooth',
+    priceNum: 2699,
+    originalPriceNum: 4999,
+    discount: '46% Off',
+    rating: '4.4',
+    reviews: '14,200',
+    details: [
+      '48 dB Hybrid Active Noise Cancellation',
+      'Ultra Bass Technology 2.0',
+      '55 Hours Total Playtime',
+      'Custom EQ via Nothing X App'
+    ]
+  },
+  {
+    name: 'OnePlus Nord Buds 2r True Wireless Earbuds with Dual Mic AI Crystal Clear Call',
+    priceNum: 1799,
+    originalPriceNum: 2299,
+    discount: '21% Off',
+    rating: '4.3',
+    reviews: '1,85,000',
+    details: [
+      '12.4mm Extra Large Drivers',
+      'Dual Mic AI Noise Cancellation for Calls',
+      'Up to 38 Hours Playback',
+      'IP55 Water & Sweat Resistance'
+    ]
+  },
+  {
+    name: 'OnePlus Nord Buds 3r TWS Earbud with 10min Fast Charge, 3D Audio, 2 Mic Call Bluetooth',
+    priceNum: 1900,
+    originalPriceNum: 2499,
+    discount: '23% Off',
+    rating: '4.3',
+    reviews: '42,000',
+    details: [
+      'Fast Charge: 10 mins for 8 Hours Playback',
+      '3D Spatial Audio Support',
+      'Dual Mic Call Noise Reduction',
+      'Up to 43 Hours Battery Life'
+    ]
+  },
+  {
+    name: 'Apple 20W USB-C Power Adapter for iPhone, iPad & AirPods',
+    priceNum: 1849,
+    originalPriceNum: 1900,
+    discount: '2% Off',
+    rating: '4.6',
+    reviews: '95,000',
+    details: [
+      'Official Apple 20W Power Adapter',
+      'Fast charging for iPhone & iPad',
+      'USB-C Interface',
+      'Compact & Portable'
+    ]
+  },
+  {
+    name: 'Apple Watch Ultra 2 GPS + Cellular 49mm Black Titanium Case with Green Alpine Loop',
+    priceNum: 65999,
+    originalPriceNum: 89900,
+    discount: '26% Off',
+    rating: '4.7',
+    reviews: '1,400',
+    details: [
+      '49mm Black Titanium Case',
+      'GPS + Cellular Connectivity',
+      '3000 nits Always-On Retina Display',
+      'Up to 36 Hours Battery Life'
+    ]
+  },
+  {
+    name: 'Apple Watch Series 11 GPS 46mm Jet Black Aluminium Case with Sport Band',
+    priceNum: 44999,
+    originalPriceNum: 46900,
+    discount: '4% Off',
+    rating: '4.6',
+    reviews: '2,100',
+    details: [
+      '46mm Jet Black Aluminium Case',
+      'Advanced Health & Fitness Tracking',
+      'GPS Enabled',
+      'Water Resistant 50m'
+    ]
+  },
+  {
+    name: 'Fire-Boltt Rise Phantom 1.85" Display, Transparent Clear Body Design, BT Calling Smartwatch',
+    priceNum: 1199,
+    originalPriceNum: 9999,
+    discount: '88% Off',
+    rating: '4.1',
+    reviews: '18,400',
+    details: [
+      '1.85 inch HD Display',
+      'Transparent Clear Body Design',
+      'Bluetooth Calling',
+      'Rotating Crown Control'
+    ]
+  },
+  {
+    name: 'Noise Twist Go 1.39" Display, Bluetooth Calling, Metallic Finish, 100+ Sports Modes Smartwatch',
+    priceNum: 1599,
+    originalPriceNum: 4999,
+    discount: '68% Off',
+    rating: '4.2',
+    reviews: '28,900',
+    details: [
+      '1.39 inch Round Metallic Display',
+      'Bluetooth Calling with Dial Pad',
+      '100+ Sports Modes',
+      'Noise Health Suite'
+    ]
+  },
+  {
+    name: 'Fire-Boltt Axiom 1.43" AMOLED Display Smartwatch, BT Calling, Wireless Charging, Metal Case',
+    priceNum: 2699,
+    originalPriceNum: 14999,
+    discount: '82% Off',
+    rating: '4.2',
+    reviews: '8,100',
+    details: [
+      '1.43 inch Always-On AMOLED Display',
+      'Premium Metal Case',
+      'Wireless Charging Support',
+      'Bluetooth Calling'
+    ]
+  },
+  {
+    name: 'Noise Twist Go 1.39" Display Smartwatch with BT Calling, Metallic Finish & Health Tracking',
+    priceNum: 1599,
+    originalPriceNum: 4999,
+    discount: '68% Off',
+    rating: '4.2',
+    reviews: '28,900',
+    details: [
+      '1.39 inch TFT Round Display',
+      'Metallic Finish Dial',
+      'Bluetooth Calling',
+      '7-Day Battery Life'
+    ]
+  },
+  {
+    name: 'Noise Icon Buzz 1.69" Display with Bluetooth Calling, Built-in Games & Voice Assistant Smartwatch',
+    priceNum: 1699,
+    originalPriceNum: 4999,
+    discount: '66% Off',
+    rating: '4.1',
+    reviews: '62,300',
+    details: [
+      '1.69 inch TFT Display',
+      'Bluetooth Calling & AI Voice Assistant',
+      'Built-in Games',
+      '100+ Cloud Watch Faces'
+    ]
+  },
+  {
+    name: 'Fire-Boltt Talk 1.39" Bluetooth Calling, SpO2, Metal Body Luxury Design Smartwatch',
+    priceNum: 1599,
+    originalPriceNum: 9999,
+    discount: '84% Off',
+    rating: '4.2',
+    reviews: '1,15,000',
+    details: [
+      '1.39 inch HD Display with Metal Body',
+      'Bluetooth Calling & Voice Assistant',
+      'SpO2 & Heart Rate Monitoring',
+      '120+ Sports Modes'
+    ]
+  },
+  {
+    name: 'boAt Chrome Eon Premium Metal Body, AI Coach, 1.43" AMOLED Round Display Smartwatch',
+    priceNum: 3999,
+    originalPriceNum: 8999,
+    discount: '55% Off',
+    rating: '4.3',
+    reviews: '3,200',
+    details: [
+      '1.43 inch AMOLED Round Display',
+      'Premium Metal Build',
+      'AI Fitness Coach Integration',
+      'Bluetooth Calling'
+    ]
+  },
+  {
+    name: 'Mi Sound Outdoor 30W Bluetooth Speaker with Upto 12 Hours Playback, IP67 Water/Dust Resistant',
+    priceNum: 3499,
+    originalPriceNum: 5999,
+    discount: '41% Off',
+    rating: '4.4',
+    reviews: '5,800',
+    details: [
+      '30W Punchy Audio Output',
+      'IP67 Dust & Water Resistance',
+      'Up to 12 Hours Playtime',
+      'Dynamic Bass Boost'
+    ]
+  },
+  {
+    name: 'Zebronics Sound Feast 800 55W Bluetooth Speaker with RGB Lights',
+    priceNum: 4999,
+    originalPriceNum: 9999,
+    discount: '50% Off',
+    rating: '4.2',
+    reviews: '1,400',
+    details: [
+      '55W High Power Output',
+      'RGB Party Lights',
+      'TWS Functionality',
+      'Multiple Inputs: USB, AUX, MicroSD & BT'
+    ]
+  },
+  {
+    name: 'Bose New SoundLink Flex Portable (2nd Gen) Outdoor Hi-Fi Audio Bluetooth Speaker',
+    priceNum: 16900,
+    originalPriceNum: 17900,
+    discount: '5% Off',
+    rating: '4.7',
+    reviews: '920',
+    details: [
+      'Hi-Fi Premium Audio by Bose',
+      'IP67 Dust and Waterproof',
+      'PositionIQ Technology for optimal orientation sound',
+      'Up to 12 Hours Battery Life'
+    ]
+  },
+  {
+    name: 'Bose New Smart Dolby Atmos Voice Control, Works with Google Assistant Bluetooth Soundbar',
+    priceNum: 57900,
+    originalPriceNum: 69900,
+    discount: '17% Off',
+    rating: '4.7',
+    reviews: '1,200',
+    details: [
+      'Dolby Atmos spatial audio',
+      'Built-in Voice Control (Google Assistant)',
+      'Wi-Fi & Bluetooth connectivity',
+      'Premium Bose sound engineering'
+    ]
+  },
+  {
+    name: 'Zebronics Juke Bar 9900 SBSPK C3 DTS X Dolby Atmos, 2x Wireless Subwoofer, 725 W Bluetooth Soundbar',
+    priceNum: 29990,
+    originalPriceNum: 69999,
+    discount: '57% Off',
+    rating: '4.4',
+    reviews: '3,400',
+    details: [
+      '725W Maximum Output',
+      'DTS:X & Dolby Atmos Support',
+      'Dual Wireless Subwoofers',
+      'Wireless Satellite Speakers'
+    ]
+  },
+  {
+    name: 'Zebronics Juke Bar 10000 SBSPK C16 Dolby Atmos DTS X, Wireless Subwoofer, 1100 W Bluetooth Soundbar',
+    priceNum: 44999,
+    originalPriceNum: 89999,
+    discount: '50% Off',
+    rating: '4.5',
+    reviews: '2,100',
+    details: [
+      'Massive 1100W Output',
+      'Dolby Atmos & DTS:X Surround Sound',
+      'Wireless Subwoofer & Satellites',
+      'Premium cinematic audio'
+    ]
+  },
+  {
+    name: 'Zebronics County Pro 11 Dual Drivers TWS, BT v5.4, Mic Input, RGB Lights 16W Bluetooth Speaker',
+    priceNum: 1199,
+    originalPriceNum: 2999,
+    discount: '60% Off',
+    rating: '4.1',
+    reviews: '15,800',
+    details: [
+      '16W Audio Output with Dual Drivers',
+      'TWS functionality',
+      'RGB Party Lights',
+      'Carry handle & Mic input'
+    ]
+  },
+  {
+    name: 'Zebronics Party Fyre 90 Trolley Speaker, 5H Playback, Wireless Mic, Display, Bluetooth',
+    priceNum: 5999,
+    originalPriceNum: 12999,
+    discount: '53% Off',
+    rating: '4.2',
+    reviews: '4,600',
+    details: [
+      'Portable Trolley Design',
+      'Includes Wireless Mic',
+      'Up to 5 Hours Playback',
+      'LED Display & TWS Support'
+    ]
+  },
+  {
+    name: 'Gabit Smart Ring, 7-10 Days Battery, Track Steps, VO2 Max, Recovery, Calorie Counter',
+    priceNum: 14500,
+    originalPriceNum: 20000,
+    discount: '27% Off',
+    rating: '4.3',
+    reviews: '850',
+    details: [
+      '7-10 Days Battery Life',
+      'VO2 Max & Recovery Tracking',
+      'Steps and Calorie Counter',
+      'Sleek finger-wearable design'
+    ]
+  },
+  {
+    name: 'boAt Active with Portable Charging Case, Lightweight Stainless Steel Design Smart Ring',
+    priceNum: 3799,
+    originalPriceNum: 8999,
+    discount: '57% Off',
+    rating: '4.0',
+    reviews: '3,200',
+    details: [
+      'Lightweight Stainless Steel Build',
+      'Portable Charging Case Included',
+      'Health & Fitness Tracking',
+      'Smart touch controls'
+    ]
+  },
+  {
+    name: 'Ultrahuman Ring Air, Track Sleep, Workouts, HR, HRV Health Tracker, Up to 6 Days Battery',
+    priceNum: 28499,
+    originalPriceNum: 28499,
+    discount: '0% Off',
+    rating: '4.6',
+    reviews: '2,400',
+    details: [
+      'Ultra-lightweight Air design',
+      'Advanced Sleep & Recovery tracking',
+      'Continuous HR & HRV monitoring',
+      'Up to 6 Days Battery'
+    ]
+  },
+  {
+    name: 'GOBOULT Crown 1.95" HD Display, BT Calling, Working Crown, 900 Nits, SpO2 Smartwatch',
+    priceNum: 1499,
+    originalPriceNum: 5499,
+    discount: '72% Off',
+    rating: '4.1',
+    reviews: '24,500',
+    details: [
+      'Large 1.95 inch HD Display',
+      '900 Nits Brightness',
+      'Bluetooth Calling',
+      'Working Navigation Crown'
+    ]
+  },
+  {
+    name: 'GOBOULT Mustang Racer 1.43" AMOLED, Premium Crown, Working Paddler, AI Coach, AOD, IP67',
+    priceNum: 3999,
+    originalPriceNum: 9999,
+    discount: '60% Off',
+    rating: '4.3',
+    reviews: '5,100',
+    details: [
+      '1.43 inch AMOLED Always-On Display',
+      'Premium Working Crown & Paddler',
+      'AI Fitness Coach',
+      'IP67 Water Resistant'
+    ]
+  },
+  {
+    name: 'Titan Orbis Smartwatch with Premium Build',
+    priceNum: 9999,
+    originalPriceNum: 14999,
+    discount: '33% Off',
+    rating: '4.4',
+    reviews: '1,200',
+    details: [
+      'Premium Titan Build Quality',
+      'Advanced Health Tracking',
+      'AMOLED Display',
+      'Classic timepiece aesthetic'
+    ]
+  },
+  {
+    name: 'GOBOULT Mustang Stallion 1.43" AMOLED, Functional Bezel, 700 Nits Brightness Smartwatch',
+    priceNum: 4999,
+    originalPriceNum: 12999,
+    discount: '61% Off',
+    rating: '4.2',
+    reviews: '3,800',
+    details: [
+      '1.43 inch AMOLED Display',
+      'Rotating Functional Bezel',
+      '700 Nits Peak Brightness',
+      'Bluetooth Calling'
+    ]
+  },
+  {
+    name: 'GOBOULT Rover Pro 1.43" AMOLED Display, BT Calling, 1000 Nits Brightness Smartwatch',
+    priceNum: 1999,
+    originalPriceNum: 5999,
+    discount: '66% Off',
+    rating: '4.3',
+    reviews: '18,900',
+    details: [
+      '1.43 inch AMOLED Screen',
+      '1000 Nits Ultra Bright Display',
+      'Bluetooth Calling Supported',
+      'Comprehensive Health Suite'
+    ]
+  },
+  {
+    name: 'GOBOULT Tuff Rivet 1.9" HD Display, Working Crown, Quick Access Torch Smartwatch',
+    priceNum: 1599,
+    originalPriceNum: 4999,
+    discount: '68% Off',
+    rating: '4.1',
+    reviews: '22,300',
+    details: [
+      '1.9 inch HD Display',
+      'Rugged Tuff Design',
+      'Built-in Quick Access Torch',
+      'Working Crown for navigation'
+    ]
+  },
+  {
+    name: 'JBL SB250 Dolby Wireless 200 W Bluetooth Soundbar',
+    priceNum: 29990,
+    originalPriceNum: 39999,
+    discount: '25% Off',
+    rating: '4.1',
+    reviews: '12,535',
+    details: [
+      '2.1 Channel Configuration',
+      '200W Powerful Output',
+      'Dolby Digital Supported',
+      'Wireless Subwoofer for Deep Bass',
+      'Bluetooth & HDMI Connectivity'
+    ]
+  },
+  {
+    name: 'JBL Bar Studio Bluetooth Soundbar (Black, Stereo Channel)',
+    priceNum: 8999,
+    originalPriceNum: 11999,
+    discount: '25% Off',
+    rating: '4.1',
+    reviews: '628',
+    details: [
+      'Stereo Channel Configuration',
+      'Built-in Dual Bass Port design',
+      'HDMI ARC & Optical Connectivity',
+      'Bluetooth Supported',
+      'Slim and compact profile'
+    ]
+  },
+  {
+    name: 'Blaupunkt SBW-01 Dolby Bluetooth Soundbar',
+    priceNum: 7999,
+    originalPriceNum: 17990,
+    discount: '56% Off',
+    rating: '4.0',
+    reviews: '259',
+    details: [
+      'Dolby Audio Supported',
+      '2.1 Channel Configuration',
+      'High Fidelity Sound Output',
+      'Multiple EQ Modes',
+      'Sleek European Design'
+    ]
+  },
+  {
+    name: 'GOBOULT Mustang Torq Wireless in Ear Earbuds with 60H Playtime, Quad Mic ENC, 45ms Low Latency, Breathing LEDs (Yellow)',
+    priceNum: 1799,
+    originalPriceNum: 5999,
+    discount: '70% Off',
+    rating: '4.0',
+    reviews: '14,663',
+    details: [
+      '60 Hours Playtime',
+      'Quad Mic ENC for Clear Calls',
+      '45ms Low Latency Gaming Mode',
+      '13mm Drivers & Breathing LEDs',
+      'Made in India (Yellow Edition)'
+    ]
+  },
+  {
+    name: 'GOBOULT Mustang Sprint in Ear Earbuds with 60H Playtime, 32dB ANC, Quad Mic ENC, Dual Device Pairing, BTv 6.0',
+    priceNum: 1699,
+    originalPriceNum: 5999,
+    discount: '72% Off',
+    rating: '4.0',
+    reviews: '879',
+    details: [
+      '32dB Active Noise Cancellation',
+      '60 Hours Playtime with Amp App Support',
+      'Dual Device Pairing',
+      'Quad Mic ENC',
+      '10mm Drivers & BT v6.0'
+    ]
+  },
+  {
+    name: 'GOBOULT Mustang Torq Wireless in Ear Earbuds with 60H Playtime, Quad Mic ENC, 45ms Low Latency, Breathing LEDs (Green)',
+    priceNum: 1799,
+    originalPriceNum: 5999,
+    discount: '70% Off',
+    rating: '4.0',
+    reviews: '14,663',
+    details: [
+      '60 Hours Playtime',
+      'Quad Mic ENC for Clear Calls',
+      '45ms Low Latency Gaming Mode',
+      '13mm Drivers & Breathing LEDs',
+      'Made in India (Green Edition)'
+    ]
+  }
+];
+
+const PRODUCTS = Array.from({ length: 60 }, (_, i) => {
+  const base = {
+    id: i + 1,
+    name: String(i + 1),
+    details: 'abc',
+    priceNum: 99,
+    originalPriceNum: 990,
+    discount: '90% Off',
+    rating: '4.3',
+    reviews: '12,345',
+    imagePlaceholder: true
+  };
+  return REAL_PRODUCTS[i] ? Object.assign(base, REAL_PRODUCTS[i]) : base;
+});
+
+/* ============================================================
+   ONE-TIME PRICING OVERHAUL
+   New selling price per category (parsed from the name). The
+   original crossed-out price is untouched; the discount string is
+   recalculated mathematically from the new selling price.
+   ============================================================ */
+(function repriceCatalogue() {
+  /* deterministic value inside [min, max], seeded by id, so prices
+     stay stable across renders and reloads */
+  const priceIn = (id, min, max) => min + ((id * 37) % (max - min + 1));
+  PRODUCTS.forEach(p => {
+    const n = p.name.toLowerCase();
+    const isApple = n.startsWith('apple');
+    let newPrice;
+    if (isApple && (n.includes('watch') || n.includes('airpods'))) {
+      newPrice = priceIn(p.id, 300, 399);          /* Apple Watch & AirPods */
+    } else if (n.includes('adapter') || n.includes('charger')) {
+      newPrice = 149;                               /* chargers: flat */
+    } else if (/\bring\b/.test(n)) {
+      newPrice = priceIn(p.id, 119, 149);           /* smart rings (word-boundary: "Pairing" is NOT a ring) */
+    } else if (n.includes('soundbar')) {
+      newPrice = priceIn(p.id, 129, 199);           /* soundbars */
+    } else if (n.includes('watch')) {
+      newPrice = priceIn(p.id, 149, 249);           /* smartwatches */
+    } else if (n.includes('headphone') || n.includes('headset') || n.includes('headbug')) {
+      newPrice = priceIn(p.id, 129, 199);           /* headphones */
+    } else {
+      newPrice = priceIn(p.id, 119, 149);           /* earpods / earbuds / other audio */
+    }
+    /* Retail-style pricing: every price ends in 9 (119, 139, 249...) */
+    newPrice = newPrice - (newPrice % 10) + 9;
+    p.priceNum = newPrice;
+    p.discount = Math.round(((p.originalPriceNum - newPrice) / p.originalPriceNum) * 100) + '% Off';
+  });
+})();
+
+/* ============================================================
+   PRODUCT RANDOMIZATION
+   ============================================================ */
+/* Fisher-Yates shuffle (in place; returns the array) */
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = array[i];
+    array[i] = array[j];
+    array[j] = t;
+  }
+  return array;
+}
+
+/* Initial shuffle: every page load / refresh shows the homepage grid
+   in a completely random order (lookups stay id-based, so nothing
+   else is affected) */
+shuffleArray(PRODUCTS);
+
+/* Every category link (drawer, homepage scroll menu, categories
+   sidebar): re-shuffle and show the freshly mixed all-products grid */
+function onCategoryClick() {
+  if (typeof toggleMenu === 'function') toggleMenu(false);
+  /* the /all-products renderer shuffles the catalogue on every visit
+     (same-hash navigation re-renders via router()) */
+  navigate('/all-products');
+}
+
+const fmt = n => '\u20B9' + n.toLocaleString('en-IN');
+const pad2 = n => String(n).padStart(2, '0');
+
+/* Delivery estimate: today + 3 days, formatted "DD MMM, ddd" (e.g. "26 Jul, Sun").
+   Date#setDate handles month/year rollovers natively (Jul 30 + 3 -> Aug 2). */
+function deliveryDateStr() {
+  const d = new Date();
+  d.setDate(d.getDate() + 3);
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  return pad2(d.getDate()) + ' ' + MONTHS[d.getMonth()] + ', ' + DAYS[d.getDay()];
+}
+
+/* details can be a rich feature array (real products) or a plain
+   string (placeholder products): normalize to <li> rows */
+const detailsList = p => (Array.isArray(p.details) ? p.details : [p.details])
+  .map(d => '<li>' + d + '</li>').join('');
+
+/* Escape double quotes (e.g. 1.85" displays) for HTML attribute values */
+const attrSafe = s => String(s).replace(/"/g, '&quot;');
+
+/* First photo of a product — the images[0] equivalent of our
+   folder convention: images/<padded-id>/p<id>-1.png, with a .jpg
+   retry and a final fallback to the grey "Image" placeholder text.
+   Used by every thumbnail slot so the exact same photo a user sees
+   on the product page carries over to cart and checkout views. */
+function thumbImg(p) {
+  return '<img src="images/' + pad2(p.id) + '/p' + p.id + '-1.png" alt="' + attrSafe(p.name) + '" ' +
+    'onerror="if(this.dataset.f==3){this.parentElement.textContent=\'Image\'}else if(this.dataset.f==2){this.dataset.f=3;this.src=this.src.slice(0,-5)+\'.webp\'}else if(this.dataset.f==1){this.dataset.f=2;this.src=this.src.slice(0,-4)+\'.jpeg\'}else{this.dataset.f=1;this.src=this.src.slice(0,-4)+\'.jpg\'}" />';
+}
+
+/* ============================================================
+   IMAGE SOURCES
+   ============================================================ */
+const IMG_LOGO = 'images/logo.png';
+const IMG_ASSURED = 'images/f-assured.png';
+
+/* ============================================================
+   STATE MANAGEMENT
+   ============================================================ */
+const state = { selectedProductId: 1, paymentMethod: 'PhonePe', retryOrderId: null };
+let cart = [];
+
+/* ---- Post-purchase state ---- */
+let orders = []; /* { orderId, items, amount, placedAt, status } */
+let orderSeq = 1;
+
+/* ---- Authentication state ---- */
+let isLoggedIn = false;
+let userProfile = { name: '', phone: '', email: '' };
+let loginMode = 'phone'; /* 'phone' | 'email' — active login method */
+let pendingPhone = ''; /* temp holder between login steps */
+let pendingEmail = ''; /* temp holder for email login */
+let postLoginRedirect = ''; /* route to visit after successful login */
+let savedAddress = null; /* holds the address object once filled */
+let addressEntrySource = ''; /* 'homepage' | 'checkout' — where the address flow started */
+
+/* ---- Shared sale countdown: 30 minutes from every page load ---- */
+const SALE_DURATION_MS = 30 * 60 * 1000;
+const saleEnd = Date.now() + SALE_DURATION_MS;
+
+function saleRemainingSec() {
+  return Math.max(0, Math.floor((saleEnd - Date.now()) / 1000));
+}
+
+/* Single interval drives every timer element currently in the DOM,
+   keeping homepage boxes and PDP timer perfectly in sync. */
+function tickTimers() {
+  const total = saleRemainingSec();
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+
+  const eh = document.getElementById('sale-h');
+  if (eh) {
+    eh.textContent = pad2(h);
+    document.getElementById('sale-m').textContent = pad2(m);
+    document.getElementById('sale-s').textContent = pad2(s);
+  }
+  const ep = document.getElementById('pdp-timer');
+  if (ep) {
+    ep.textContent = pad2(h * 60 + m) + ':' + pad2(s);
+  }
+  /* Homepage price-pill timers: every pill ticks from the same
+     global 30-minute countdown, perfectly in sync */
+  const pills = document.querySelectorAll('.timer-sync');
+  if (pills.length) {
+    const label = pad2(h * 60 + m) + ':' + pad2(s);
+    pills.forEach(el => { el.textContent = label; });
+  }
+}
+setInterval(tickTimers, 1000);
+
+/* ============================================================
+   CAROUSEL ENGINE
+   One interval per active slider, keyed by container id. The
+   router destroys every slider on navigation and each page
+   re-initializes its own after render, so timers never leak
+   or stack when routing back and forth (SPA-safe).
+   ============================================================ */
+const sliders = {}; /* id -> { index, count, intervalMs, timer } */
+
+function initSlider(id, count, intervalMs) {
+  destroySlider(id); /* re-init safe: never stack intervals */
+  /* Seamless one-direction loop: append a CLONE of the first slide
+     (1-2-3-4-[1']); after sliding onto the clone we snap back to the
+     real first slide with the transition disabled, so the loop never
+     scrolls backwards. Guard ensures the clone is added only once. */
+  const track = document.getElementById(id + '-track');
+  if (track && track.children.length === count) {
+    track.appendChild(track.children[0].cloneNode(true));
+  }
+  const s = { index: 0, count: count, intervalMs: intervalMs, timer: null };
+  sliders[id] = s;
+  s.timer = setInterval(function () { slideStep(id, 1); }, intervalMs);
+  updateSlider(id);
+}
+
+function destroySlider(id) {
+  const s = sliders[id];
+  if (s && s.timer) clearInterval(s.timer);
+  delete sliders[id];
+}
+
+function destroyAllSliders() {
+  Object.keys(sliders).forEach(function (id) { destroySlider(id); });
+}
+
+/* Paint the current slide: shift the track and sync pagination dots */
+function updateSlider(id) {
+  const s = sliders[id];
+  const track = document.getElementById(id + '-track');
+  if (!s || !track) return;
+  track.style.transform = 'translateX(-' + (s.index * 100) + '%)';
+  updateDots(id);
+}
+
+function updateDots(id) {
+  const s = sliders[id];
+  if (!s) return;
+  const active = s.index % s.count; /* the clone maps back to dot 1 */
+  document.querySelectorAll('#' + id + '-dots .dot').forEach(function (d, i) {
+    d.classList.toggle('active', i === active);
+  });
+}
+
+/* Instantly reposition the track with the transition disabled */
+function snapTo(id, index) {
+  const s = sliders[id];
+  const track = document.getElementById(id + '-track');
+  if (!s || !track) return;
+  track.style.transition = 'none';
+  s.index = index;
+  track.style.transform = 'translateX(-' + (index * 100) + '%)';
+  void track.offsetWidth; /* force reflow so the next shift animates */
+  track.style.transition = '';
+}
+
+/* One-direction infinite loop: 1-2-3-4-[1'] then an invisible snap
+   back to the real slide 1 — the track never scrolls backwards. */
+function slideStep(id, dir) {
+  const s = sliders[id];
+  if (!s) return;
+
+  /* Parked on the clone? Silently become the real first slide. */
+  if (s.index >= s.count) snapTo(id, 0);
+
+  if (dir === 1) {
+    s.index++;
+  } else if (s.index === 0) {
+    snapTo(id, s.count); /* backward wrap: jump to the clone, then animate */
+    s.index = s.count - 1;
+  } else {
+    s.index--;
+  }
+  updateSlider(id);
+
+  /* Landed on the clone: once the .4s transition finishes, snap back
+     to the real first slide with zero visible movement */
+  if (s.index === s.count) {
+    setTimeout(function () {
+      const st = sliders[id];
+      if (st && st.index === st.count) { snapTo(id, 0); updateDots(id); }
+    }, 410);
+  }
+}
+
+/* Manual prev/next: clear the running interval and restart it AFTER
+   stepping, so an auto-slide never fires right after a user click */
+function slideManual(id, dir) {
+  const s = sliders[id];
+  if (!s) return;
+  clearInterval(s.timer);
+  slideStep(id, dir);
+  s.timer = setInterval(function () { slideStep(id, 1); }, s.intervalMs);
+}
+
+/* Equalize hero slide heights: wait for every banner to load, find the
+   SHORTEST natural aspect ratio (height/width), lock the slider to that
+   height, and let object-fit: cover center-crop the taller ones so any
+   excess is cut equally from top and bottom. No grey bands remain. */
+function equalizeHeroHeight() {
+  const car = document.getElementById('hero-car');
+  if (!car) return;
+  const imgs = car.querySelectorAll('.carousel-slide img');
+  if (!imgs.length) return;
+  let pending = imgs.length;
+  let minRatio = Infinity;
+  imgs.forEach(function (img) {
+    const measure = function () {
+      if (img.naturalWidth > 0) {
+        minRatio = Math.min(minRatio, img.naturalHeight / img.naturalWidth);
+      }
+      if (--pending === 0 && isFinite(minRatio) && minRatio > 0) {
+        car.style.height = Math.round(car.clientWidth * minRatio) + 'px';
+        car.classList.add('h-locked');
+      }
+    };
+    if (img.complete) { measure(); }
+    else { img.onload = measure; img.onerror = measure; }
+  });
+}
+
+/* Keep the locked height correct if the viewport width changes */
+window.addEventListener('resize', equalizeHeroHeight);
+
+/* Dynamic totals for any list of items (cart or direct buy) —
+   quantity-aware: every line is multiplied by its qty (default 1) */
+function totalsFor(items) {
+  const qtyOf = it => it.qty || 1;
+  const totalOriginal = items.reduce((s, it) => s + it.originalPriceNum * qtyOf(it), 0);
+  const totalFinal = items.reduce((s, it) => s + it.priceNum * qtyOf(it), 0);
+  return {
+    count: items.reduce((s, it) => s + qtyOf(it), 0),
+    totalOriginal: totalOriginal,
+    totalFinal: totalFinal,
+    totalDiscount: totalOriginal - totalFinal
+  };
+}
+function cartTotals() { return totalsFor(cart); }
+
+/* Items used by the checkout flow: cart contents, or the selected
+   product when the user came via "Buy Now" with an empty cart. */
+function checkoutItems() {
+  if (cart.length > 0) return cart;
+  const p = PRODUCTS.find(x => x.id === state.selectedProductId) || PRODUCTS[0];
+  return [p];
+}
+
+/* Cart mutations */
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (p) cart.push(Object.assign({ qty: 1 }, p));
+  /* No longer routes to /cart: refresh the badge in place and
+     slide up the confirmation bottom sheet instead. */
+  refreshCartBadge();
+  openCartSheet();
+}
+
+/* Keep every header cart badge in sync without a full re-render
+   (bottom-nav tabs are excluded: they never carry a badge) */
+function refreshCartBadge() {
+  document.querySelectorAll('.icon-btn[aria-label="Cart"]').forEach(btn => {
+    let b = btn.querySelector('.cart-badge');
+    if (cart.length === 0) { if (b) b.remove(); return; }
+    if (!b) {
+      b = document.createElement('span');
+      b.className = 'cart-badge';
+      btn.appendChild(b);
+    }
+    b.textContent = cart.length;
+  });
+}
+
+/* ============================================================
+   ADD-TO-CART BOTTOM SHEET
+   ============================================================ */
+function openCartSheet() {
+  closeCartSheet(); /* safety: never stack two sheets */
+
+  /* 3 random "Customers also bought" picks from the DB */
+  const pool = PRODUCTS.slice();
+  const picks = [];
+  while (picks.length < 3 && pool.length) {
+    picks.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  }
+  const cardsHtml = picks.map(sp =>
+    '<div class="sim-card" onclick="sheetGoProduct(' + sp.id + ')">' +
+      '<div class="sim-img">' + thumbImg(sp) + '</div>' +
+      '<div class="sim-title">' + sp.name + '</div>' +
+      '<div class="sim-price">' + fmt(sp.priceNum) + '</div>' +
+    '</div>'
+  ).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'sheet-overlay';
+  overlay.id = 'sheet-overlay';
+  overlay.onclick = closeCartSheet;
+
+  const sheet = document.createElement('div');
+  sheet.className = 'cart-sheet';
+  sheet.id = 'cart-sheet';
+  sheet.innerHTML =
+    '<div class="sheet-head">' +
+      ICONS.check.replace('<svg ', '<svg class="check" ') +
+      '<span class="sheet-title">Added to cart</span>' +
+      '<button class="sheet-close" aria-label="Close" onclick="closeCartSheet()">' + ICONS.close + '</button>' +
+    '</div>' +
+    '<div class="sheet-sub">Customers also bought</div>' +
+    '<div class="sheet-scroll">' + cardsHtml + '</div>' +
+    '<button class="btn-view-cart" onclick="sheetViewCart()">View Cart</button>';
+
+  document.body.appendChild(overlay);
+  document.body.appendChild(sheet);
+
+  /* double rAF: paint the off-screen state first so the bottom
+     transition actually animates the slide-up */
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      overlay.classList.add('open');
+      sheet.classList.add('open');
+    });
+  });
+}
+
+function closeCartSheet() {
+  const overlay = document.getElementById('sheet-overlay');
+  const sheet = document.getElementById('cart-sheet');
+  if (sheet) {
+    sheet.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    setTimeout(function () {
+      sheet.remove();
+      if (overlay) overlay.remove();
+    }, 300);
+  } else if (overlay) {
+    overlay.remove();
+  }
+}
+
+function sheetGoProduct(id) {
+  closeCartSheet();
+  navigate('/product/' + id);
+}
+
+function sheetViewCart() {
+  closeCartSheet();
+  navigate('/cart');
+}
+
+/* ============================================================
+   IMAGE ZOOM LIGHTBOX (PDP product images)
+   ============================================================ */
+function openLightbox(src) {
+  if (!src) return;
+  closeLightbox();
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.id = 'lightbox';
+  lb.onclick = function (e) { if (e.target === lb) closeLightbox(); };
+  lb.innerHTML =
+    '<button class="lb-close" aria-label="Close" onclick="closeLightbox()">' + ICONS.close + '</button>' +
+    '<img src="' + src + '" alt="Product image zoom" />';
+  document.body.appendChild(lb);
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  if (lb) lb.remove();
+}
+function removeFromCart(index) { cart.splice(index, 1); renderCartPage(); }
+function saveForLater(index) { cart.splice(index, 1); renderCartPage(); }
+
+/* Qty dropdown: re-render recomputes the line total and subtotal
+   through the qty-aware totalsFor() */
+function setQty(index, val) {
+  const q = parseInt(val, 10) || 1;
+  if (cart[index]) cart[index].qty = q;
+  renderCartPage();
+}
+
+/* ============================================================
+   SVG ICONS
+   ============================================================ */
+const ICONS = {
+  menu: '<svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  user: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>',
+  cart: '<svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 3h2l2.6 12.4a1 1 0 0 0 1 .8h9.7a1 1 0 0 0 1-.8L21 7H6"/></svg>',
+  back: '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>',
+  share: '<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>',
+  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>',
+  shield: '<svg viewBox="0 0 24 24"><path d="M12 2l8 3.5V11c0 5.2-3.4 9.2-8 11-4.6-1.8-8-5.8-8-11V5.5z"/><polyline points="8.5 11.5 11 14 15.5 9"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#FB641B;fill:none;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>',
+  clockSm: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>',
+  truck: '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="13" height="10" rx="1"/><path d="M15 9h4l3 3.5V16h-7"/><circle cx="6.5" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>',
+  check: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9.5"/></svg>',
+  replace7: '<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><polyline points="20 3 20 6.3 16.7 6.3"/><polyline points="8.8 12.4 11 14.6 15.2 9.8"/></svg>',
+  cod: '<svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M9.8 9h4.4M9.8 11.3h4.4M9.8 9c1.7 0 2.7.8 2.7 2.3 0 1.3-1 2.1-2.7 2.1l3.4 2.6"/></svg>',
+  assuredShield: '<svg viewBox="0 0 24 24"><path fill="#2874F0" stroke="none" d="M12 2l8 3.5V11c0 5.2-3.4 9.2-8 11-4.6-1.8-8-5.8-8-11V5.5z"/><text x="12" y="15.5" text-anchor="middle" font-size="10.5" font-weight="700" font-style="italic" fill="#fff" stroke="none" font-family="Inter, sans-serif">f</text></svg>',
+  shieldCheck: '<svg viewBox="0 0 24 24"><path d="M12 2l8 3.5V11c0 5.2-3.4 9.2-8 11-4.6-1.8-8-5.8-8-11V5.5z"/><polyline points="8.5 11.5 11 14 15.5 9" fill="none" stroke="#F1F3F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  box: '<svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5"/><line x1="12" y1="13" x2="12" y2="21"/></svg>',
+  star: '<svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:#fff;stroke:none"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>',
+  locPin: '<svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.75 2.75 0 1 1 12 6a2.75 2.75 0 0 1 0 5.5z"/></svg>',
+  sparkle: '<svg viewBox="0 0 24 24"><path d="M12 2c.6 4.9 2.5 7.5 10 10-7.5 2.5-9.4 5.1-10 10-.6-4.9-2.5-7.5-10-10 7.5-2.5 9.4-5.1 10-10z"/></svg>',
+  chevron: '<svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>',
+  home: '<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5.5 9.5V21h13V9.5"/></svg>',
+  grid: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>',
+  doc: '<svg viewBox="0 0 24 24"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><polyline points="14 2 14 7 19 7"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>',
+  lang: '<svg viewBox="0 0 24 24"><path d="M3 5h10"/><path d="M8 3v2"/><path d="M4.5 5c1 4 3.5 7.5 7 9.5"/><path d="M11.5 5c-1 4-3.5 7.5-7 9.5"/><path d="M13 21l4.5-10L22 21"/><path d="M14.5 17.5h6"/></svg>',
+  bell: '<svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9z"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg>',
+  headset: '<svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M20 19a3 3 0 0 1-3 3h-3"/></svg>',
+  store: '<svg viewBox="0 0 24 24"><path d="M4 4h16l1 4H3z"/><path d="M5 8v12h14V8"/><path d="M10 20v-5h4v5"/></svg>',
+  question: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4.9.8c0 1.6-2.4 2.1-2.4 3.4"/><line x1="12" y1="17" x2="12" y2="17.01"/></svg>',
+  close: '<svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>'
+};
+
+/* Expanded category list matching the Flipkart mobile homepage */
+const CATEGORIES = ['For You', 'Fashion', 'Mobiles', 'Electronics', 'Beauty', 'Home', 'Appliances', 'Toys, baby..', 'Food & He..', 'Auto Acces..'];
+
+/* Minimalist thin line-art SVG icons per category (single-color strokes,
+   styled globally via .cat-icon svg) */
+const CAT_ICONS = {
+  'For You': '<svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.2 6L12 16.7l-5.5 2.9 1.2-6L3.2 9.4l6.1-.8z"/></svg>',
+  'Fashion': '<svg viewBox="0 0 24 24"><path d="M9 3c0 1.7 1.3 3 3 3s3-1.3 3-3"/><path d="M9 3l1.6 4.2L7 20h10L13.4 7.2 15 3"/></svg>',
+  'Mobiles': '<svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/></svg>',
+  'Electronics': '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5"/><line x1="2" y1="19" x2="22" y2="19"/></svg>',
+  'Beauty': '<svg viewBox="0 0 24 24"><path d="M10 10V5.2L14 3v7"/><rect x="8.5" y="10" width="7" height="4" rx="1"/><path d="M9.5 14v6.5h5V14"/></svg>',
+  'Home': '<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-6h4v6"/></svg>',
+  'Appliances': '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="1.5"/><line x1="9" y1="20" x2="15" y2="20"/></svg>',
+  'Toys, baby..': '<svg viewBox="0 0 24 24"><circle cx="6.8" cy="5.2" r="2"/><circle cx="17.2" cy="5.2" r="2"/><circle cx="12" cy="8.5" r="4.3"/><path d="M6.9 12.4c-1.5 1.2-2.4 2.7-2.4 4.1 0 3 3.4 5 7.5 5s7.5-2 7.5-5c0-1.4-.9-2.9-2.4-4.1"/></svg>',
+  'Food & He..': '<svg viewBox="0 0 24 24"><path d="M12 8.5c-1.2-2.4-3.7-3-5.6-2C4 7.8 3.4 11.3 5 15s4.3 5.8 7 4.4c2.7 1.4 5.4-.7 7-4.4s1-7.2-1.4-8.5c-1.9-1-4.4-.4-5.6 2z"/><path d="M12 8.5c0-2.2 1-3.8 3-4.8"/></svg>',
+  'Auto Acces..': '<svg viewBox="0 0 24 24"><path d="M5 12l1.4-4.3a2 2 0 0 1 1.9-1.2h7.4a2 2 0 0 1 1.9 1.2L19 12"/><rect x="3.5" y="12" width="17" height="5" rx="1"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/></svg>'
+};
+
+function cartIconWithBadge() {
+  const badge = cart.length > 0 ? '<span class="cart-badge">' + cart.length + '</span>' : '';
+  return '<button class="icon-btn" aria-label="Cart" onclick="navigate(\'/cart\')">' + ICONS.cart + badge + '</button>';
+}
+
+/* Standardized high-fidelity trust badge, reused on the Cart,
+   Order Summary and Payment views. Full-width so the light grey
+   background spans edge-to-edge within the 480px shell. */
+function trustBadgeHtml() {
+  return '<div class="trust-badge">' + ICONS.shieldCheck +
+    '<span>Safe and secure payments. Easy returns. 100% Authentic products.</span>' +
+  '</div>';
+}
+
+/* ============================================================
+   ROUTER (hash-based client-side routing)
+   ============================================================ */
+function navigate(path) {
+  if (window.location.hash === '#' + path) { router(); }
+  else { window.location.hash = path; }
+}
+
+function router() {
+  destroyAllSliders(); /* stop carousel timers from the previous view */
+  /* Cancel any in-flight payment processing if the user navigates away */
+  if (typeof processingTimer !== 'undefined' && processingTimer) {
+    clearTimeout(processingTimer);
+    processingTimer = null;
+  }
+  if (typeof clearStatusTimers === 'function') clearStatusTimers();
+  const hash = window.location.hash.replace(/^#/, '') || '/';
+  const productMatch = hash.match(/^\/product\/(\d+)$/);
+  const orderDetailsMatch = hash.match(/^\/order-details\/(\d+)$/);
+  const retryMatch = hash.match(/^\/checkout\/retry\/(\d+)$/);
+
+  if (productMatch) {
+    state.selectedProductId = parseInt(productMatch[1], 10);
+    renderProductPage(state.selectedProductId);
+  } else if (orderDetailsMatch) {
+    renderOrderDetailsPage(parseInt(orderDetailsMatch[1], 10));
+  } else if (retryMatch) {
+    renderRetryPage(parseInt(retryMatch[1], 10));
+  } else if (hash === '/orders') {
+    renderOrdersPage();
+  } else if (hash === '/order-success') {
+    renderOrderSuccessPage();
+  } else if (hash === '/all-products') {
+    renderAllProductsPage();
+  } else if (hash === '/account') {
+    renderAccountPage();
+  } else if (hash === '/categories') {
+    renderCategoriesPage();
+  } else if (hash === '/login') {
+    renderLoginPhonePage();
+  } else if (hash === '/login/name') {
+    renderLoginNamePage();
+  } else if (hash === '/cart') {
+    renderCartPage();
+  } else if (hash === '/checkout/address') {
+    renderAddressPage();
+  } else if (hash === '/checkout/summary') {
+    renderSummaryPage();
+  } else if (hash === '/checkout/payment') {
+    renderPaymentPage();
+  } else {
+    renderHomePage();
+  }
+  /* ---- Premium page-enter animation on every navigation ---- */
+  const appContainer = app();
+  appContainer.classList.remove('animate-page-enter');
+  void appContainer.offsetWidth; /* force reflow so the animation restarts */
+  appContainer.classList.add('animate-page-enter');
+  /* Remove the class when done: a lingering transform would make #app the
+     containing block for position:fixed children (bottom nav, checkout bars,
+     drawer) and detach them from the viewport. */
+  appContainer.addEventListener('animationend', function clearAnim() {
+    appContainer.classList.remove('animate-page-enter');
+    appContainer.removeEventListener('animationend', clearAnim);
+  });
+
+  window.scrollTo(0, 0);
+  tickTimers(); /* paint timers immediately after render, no 1s blank */
+}
+
+window.addEventListener('hashchange', router);
+window.addEventListener('DOMContentLoaded', router);
+
+const app = () => document.getElementById('app');
+
+/* ============================================================
+   SHARED COMPONENTS
+   ============================================================ */
+function checkoutStepper(activeStep) {
+  const steps = ['Address', 'Order Summary', 'Payment'];
+  return '<div class="stepper">' + steps.map((label, i) => {
+    const n = i + 1;
+    const cls = n === activeStep ? 'step active' : 'step';
+    const line = n < steps.length ? '<div class="step-line"></div>' : '';
+    return '<div class="' + cls + '"><div class="step-circle">' + n +
+           '</div><div class="step-label">' + label + '</div></div>' + line;
+  }).join('') + '</div>';
+}
+
+/* backTo (optional): hard-route the back arrow to a fixed path
+   instead of history.back() — e.g. My Orders always goes home so the
+   user can never step back into the order-success animation */
+function subHeader(title, backTo) {
+  const backAction = backTo ? "navigate('" + backTo + "')" : 'history.back()';
+  return '<header class="header">' +
+    '<div class="h-left">' +
+      '<button class="icon-btn" onclick="' + backAction + '" aria-label="Back">' + ICONS.back + '</button>' +
+      '<span style="font-size:16px;font-weight:600">' + title + '</span>' +
+    '</div>' +
+    '<div class="h-right">' + cartIconWithBadge() + '</div>' +
+  '</header>';
+}
+
+/* Dynamic Price Details block computed from a list of items */
+function priceDetailsBlock(items) {
+  const t = totalsFor(items);
+  const itemWord = t.count === 1 ? '1 item' : t.count + ' items';
+  return '<div class="card-block">' +
+    '<div class="section-label">Price Details</div>' +
+    '<div class="price-row"><span>Price (' + itemWord + ')</span><span>' + fmt(t.totalOriginal) + '</span></div>' +
+    '<div class="price-row"><span>Discount</span><span class="green">\u2212 ' + fmt(t.totalDiscount) + '</span></div>' +
+    '<div class="price-row"><span>Delivery Charges</span><span class="green">FREE Delivery</span></div>' +
+    '<div class="price-row total"><span>Total Amount</span><span>' + fmt(t.totalFinal) + '</span></div>' +
+  '</div>';
+}
+
+/* ============================================================
+   PAGE 1: HOMEPAGE
+   ============================================================ */
+/* Delivery-location bar: State A (no address) shows the CTA text,
+   State B (address saved) shows the truncated address + a blue ">".
+   Both states route through startAddress() (isLoggedIn guard). */
+function locBarHtml() {
+  if (savedAddress) {
+    const a = savedAddress;
+    const addr = [a.house, a.road, a.city, a.state].filter(Boolean).join(', ') +
+                 (a.pincode ? ' \u2013 ' + a.pincode : '');
+    return '<div class="loc-bar" onclick="startAddress()">' + ICONS.locPin +
+      '<span class="loc-not-set loc-addr-text">' + addr + '</span>' +
+      '<span class="loc-select">&gt;</span>' +
+    '</div>';
+  }
+  return '<div class="loc-bar" onclick="startAddress()">' + ICONS.locPin +
+    '<span class="loc-not-set">Location not set</span>' +
+    '<span class="loc-select">Select delivery location &gt;</span>' +
+  '</div>';
+}
+
+/* Shared homepage-style product card (homepage grid + /all-products) */
+function productCardHtml(p) {
+  return '<div class="product-card" onclick="navigate(\'/product/' + p.id + '\')">' +
+    '<div class="img-ph">' + thumbImg(p) + '</div>' +
+    '<div class="p-title">' + p.name + '</div>' +
+    '<div class="p-discount-row"><span class="p-discount">' + p.discount + '</span>' +
+      '<span class="p-strike">' + fmt(p.originalPriceNum) + '</span></div>' +
+    '<div class="p-price-row"><span class="p-price">' + fmt(p.priceNum) + '</span>' +
+      '<span class="badge-logo"><img src="' + IMG_ASSURED + '" alt="f-Assured" onerror="this.remove()" /></span>' +
+      '<span class="p-timer">' + ICONS.clockSm + '<span class="timer-sync">30:00</span></span></div>' +
+    '<div class="p-subtext">Free Delivery in Two Days</div>' +
+  '</div>';
+}
+
+/* ---- Homepage search: prefix-match suggestions dropdown ---- */
+function onSearchInput(v) {
+  const dd = document.getElementById('search-dd');
+  if (!dd) return;
+  const q = v.trim().toLowerCase();
+  if (!q) { dd.style.display = 'none'; dd.innerHTML = ''; return; }
+  const matches = PRODUCTS.filter(p => p.name.toLowerCase().startsWith(q)).slice(0, 8);
+  dd.innerHTML = matches.length
+    ? matches.map(p =>
+        '<div class="search-item" onclick="navigate(\'/product/' + p.id + '\')">' +
+          '<span class="search-thumb">' + thumbImg(p) + '</span>' +
+          '<span class="search-name">' + p.name + '</span>' +
+          '<span class="search-arrow">\u2197</span>' +
+        '</div>'
+      ).join('')
+    : '<div class="search-empty">No products found</div>';
+  dd.style.display = 'block';
+}
+
+function renderHomePage() {
+  const catItems = CATEGORIES.map((c, i) =>
+    '<div class="cat-item' + (i === 0 ? ' active' : '') + '" onclick="onCategoryClick()">' +
+      '<div class="cat-icon">' + (CAT_ICONS[c] || '') + '</div>' +
+      '<span>' + c + '</span>' +
+    '</div>'
+  ).join('');
+
+  const cards = PRODUCTS.map(productCardHtml).join('');
+
+  app().innerHTML =
+    '<header class="header header-blue">' +
+      '<div class="h-left">' +
+        '<button class="icon-btn" aria-label="Menu" onclick="toggleMenu(true)">' + ICONS.menu + '</button>' +
+        '<img class="logo-img" src="' + IMG_LOGO + '" alt="Logo" onerror="this.remove()" />' +
+      '</div>' +
+      '<div class="h-right">' +
+        '<button class="icon-btn" aria-label="Account" onclick="navigate(\'/account\')">' + ICONS.user + '</button>' +
+        cartIconWithBadge() +
+      '</div>' +
+    '</header>' +
+
+    locBarHtml() +
+
+    '<div class="search-wrap">' +
+      '<div class="search-box">' + ICONS.search +
+        '<input type="text" id="search-input" placeholder="Search for Products" aria-label="Search for Products" autocomplete="off" oninput="onSearchInput(this.value)" />' +
+      '</div>' +
+      '<div class="search-dd" id="search-dd" style="display:none"></div>' +
+    '</div>' +
+
+    '<div class="cat-nav">' + catItems + '</div>' +
+
+    '<div class="hero carousel" id="hero-car">' +
+      '<div class="carousel-track" id="hero-car-track">' +
+        '<div class="carousel-slide"><img src="images/hero-banner/hero1x.png" alt="Banner 1" onerror="this.remove()" /></div>' +
+        '<div class="carousel-slide"><img src="images/hero-banner/hero2.webp" alt="Banner 2" onerror="this.remove()" /></div>' +
+        '<div class="carousel-slide"><img src="images/hero-banner/hero3.png" alt="Banner 3" onerror="this.remove()" /></div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="sale-banner">' +
+      '<img class="sale-poster" src="images/poster/poster1.png" alt="Big Billion Days sale" onerror="this.remove()" />' +
+      '<div class="sale-overlay">' +
+        '<div class="sale-sub">\u23F3 Sale Ending Soon!</div>' +
+        '<div class="sale-boxes">' +
+          '<div class="sale-box-wrap"><div class="sale-box" id="sale-h">00</div><span class="sale-box-label">Hours</span></div>' +
+          '<div class="sale-box-wrap"><div class="sale-box" id="sale-m">30</div><span class="sale-box-label">Minutes</span></div>' +
+          '<div class="sale-box-wrap"><div class="sale-box" id="sale-s">00</div><span class="sale-box-label">Seconds</span></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="product-grid">' + cards + '</div>' +
+    '<div style="height:60px"></div>' +
+    drawerHtml() +
+    bottomNav('home');
+
+  /* Hero banner auto-slider: 3 slides, 2s interval */
+  initSlider('hero-car', 3, 2000);
+  equalizeHeroHeight();
+}
+
+/* ============================================================
+   ALL PRODUCTS VIEW (/all-products) — category landing grid
+   ============================================================ */
+function renderAllProductsPage() {
+  /* fresh shuffle on every visit: each category tap shows a newly
+     mixed grid of all available products */
+  shuffleArray(PRODUCTS);
+  const cards = PRODUCTS.map(productCardHtml).join('');
+
+  app().innerHTML =
+    '<header class="header header-blue">' +
+      '<div class="h-left">' +
+        '<button class="icon-btn" onclick="navigate(\'/\')" aria-label="Back">' + ICONS.back + '</button>' +
+        '<img class="logo-img" src="' + IMG_LOGO + '" alt="Logo" onerror="this.remove()" />' +
+      '</div>' +
+      '<div class="h-right">' +
+        '<button class="icon-btn" aria-label="Account" onclick="navigate(\'/account\')">' + ICONS.user + '</button>' +
+        cartIconWithBadge() +
+      '</div>' +
+    '</header>' +
+    '<div class="acct-section-title">All Products</div>' +
+    '<div class="product-grid">' + cards + '</div>' +
+    '<div style="height:60px"></div>' +
+    bottomNav('home');
+}
+
+/* ============================================================
+   PAGE 2: PRODUCT DETAILS
+   ============================================================ */
+function renderProductPage(id) {
+  const p = PRODUCTS.find(x => x.id === id) || PRODUCTS[0];
+
+  /* Product photos: images/<padded-id>/p<id>-<n>.png, falling back to
+     .jpg, then to the grey text placeholder if the file is missing */
+  const imgFolder = 'images/' + pad2(p.id) + '/';
+  const slideImg = n =>
+    '<div class="carousel-slide"><img src="' + imgFolder + 'p' + p.id + '-' + n + '.png" alt="Product image ' + n + '" onclick="openLightbox(this.src)" ' +
+    'onerror="if(this.dataset.f==3){this.parentElement.textContent=\'Product Image ' + n + '\'}else if(this.dataset.f==2){this.dataset.f=3;this.src=this.src.slice(0,-5)+\'.webp\'}else if(this.dataset.f==1){this.dataset.f=2;this.src=this.src.slice(0,-4)+\'.jpeg\'}else{this.dataset.f=1;this.src=this.src.slice(0,-4)+\'.jpg\'}" /></div>';
+
+  /* Similar Products: random 5-item window over the DB, excluding
+     the product currently on screen. Each card routes to its PDP. */
+  const simPool = PRODUCTS.filter(x => x.id !== p.id);
+  const simStart = Math.floor(Math.random() * Math.max(1, simPool.length - 4));
+  const simPicks = simPool.slice(simStart, simStart + 5);
+  const simCards = simPicks.map(sp =>
+    '<div class="sim-card" onclick="navigate(\'/product/' + sp.id + '\')">' +
+      '<div class="sim-img">' + thumbImg(sp) + '</div>' +
+      '<div class="sim-title">' + sp.name + '</div>' +
+      '<div class="p-discount" style="font-size:11px">' + sp.discount + '</div>' +
+      '<div class="sim-price">' + fmt(sp.priceNum) + '</div>' +
+    '</div>'
+  ).join('');
+
+  /* Delivery-location row mirrors the homepage loc bar state */
+  const dl = savedAddress;
+  const locRowHtml = dl
+    ? '<div><span class="loc-addr-text" style="max-width:230px">' +
+        [dl.house, dl.road, dl.city, dl.state].filter(Boolean).join(', ') +
+        (dl.pincode ? ' \u2013 ' + dl.pincode : '') +
+      '</span> <span class="dd-blue" onclick="startAddress()">&gt;</span></div>'
+    : '<div><div>Location not set</div>' +
+      '<div class="dd-blue" onclick="startAddress()">Select delivery location &gt;</div></div>';
+
+  app().innerHTML =
+    '<header class="header header-blue">' +
+      '<div class="h-left">' +
+        '<button class="icon-btn" onclick="navigate(\'/\')" aria-label="Back">' + ICONS.back + '</button>' +
+        '<img class="logo-img" src="' + IMG_LOGO + '" alt="Logo" onerror="this.remove()" />' +
+      '</div>' +
+      '<div class="h-right">' +
+        '<button class="icon-btn" aria-label="Search">' + ICONS.search + '</button>' +
+        cartIconWithBadge() +
+      '</div>' +
+    '</header>' +
+
+    '<div class="pdp-image carousel" id="pdp-car">' +
+      '<div class="carousel-track" id="pdp-car-track">' +
+        slideImg(1) + slideImg(2) + slideImg(3) + slideImg(4) +
+      '</div>' +
+      '<button class="car-btn left" aria-label="Previous image" onclick="slideManual(\'pdp-car\', -1)">' + ICONS.back + '</button>' +
+      '<button class="car-btn right" aria-label="Next image" onclick="slideManual(\'pdp-car\', 1)">' + ICONS.chevron + '</button>' +
+    '</div>' +
+    '<div class="dots" id="pdp-car-dots">' +
+      '<span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>' +
+    '</div>' +
+
+    '<div class="card-block">' +
+      /* Full, un-truncated product name on the details page */
+      '<div class="pdp-title">' + p.name + '</div>' +
+      '<div class="rating-row">' +
+        '<span class="rating-pill">' + (p.rating || '4.3') + ' ' + ICONS.star + '</span>' +
+        '<span class="rating-count">' + (p.reviews || '12,345') + ' Ratings</span>' +
+      '</div>' +
+      '<div class="fa-stamp">' + ICONS.sparkle +
+        '<div class="fa-stamp-text"><span class="fa-plus">Plus</span><span class="fa-sub">F-ASSURED</span></div>' +
+      '</div>' +
+      '<div class="pdp-price-row">' +
+        '<span class="pdp-price">' + fmt(p.priceNum) + '</span>' +
+        '<span class="p-strike" style="font-size:15px">' + fmt(p.originalPriceNum) + '</span>' +
+        '<span class="p-discount" style="font-size:15px">' + p.discount + '</span>' +
+      '</div>' +
+      '<div class="p-subtext" style="color:var(--text-success);font-weight:600">Free Delivery in Two Days</div>' +
+    '</div>' +
+
+    '<div class="card-block">' +
+      '<div class="section-label">Highlights</div>' +
+      '<ul class="pdp-highlights">' + detailsList(p) + '</ul>' +
+    '</div>' +
+
+    '<div class="card-block">' +
+      '<div class="section-label">Available offers</div>' +
+      '<ul class="offers-list">' +
+        '<li><span class="tag">%</span> Bank Offer: 10% instant discount on selected cards</li>' +
+        '<li><span class="tag">%</span> Special Price: Extra 5% off (price inclusive of discount)</li>' +
+        '<li><span class="tag">%</span> Partner Offer: Get extra cashback on your next purchase</li>' +
+        '<li><span class="tag">%</span> No-cost EMI available on orders above \u20B93,000</li>' +
+      '</ul>' +
+    '</div>' +
+
+    '<div class="offer-timer" style="margin-top:8px">' + ICONS.clock +
+      '<span>Offer ends in</span> <span class="time" id="pdp-timer">30:00</span>' +
+    '</div>' +
+
+    /* A. Apply Offers (blue theme) */
+    '<div class="pdp-section">' +
+      '<div class="oa-head">Apply offers for maximum savings</div>' +
+      '<div class="oa-body">' +
+        '<div class="oa-item">' +
+          '<div><div class="oa-item-title">Exchange Offer</div>' +
+          '<div class="oa-item-sub">Save up to \u20B950 by exchanging your old product</div></div>' +
+          '<span class="oa-link">Add Exchange</span>' +
+        '</div>' +
+        '<div class="oa-item">' +
+          '<div><div class="oa-item-title">Bank Offer</div>' +
+          '<div class="oa-item-sub">10% instant discount on selected credit cards</div></div>' +
+          '<span class="oa-link">View Offers</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    /* B. EMI */
+    '<div class="pdp-section">' +
+      '<div class="emi-row">' +
+        '<span class="emi-logo">EMI</span>' +
+        '<span class="emi-title">Activate Flipkart EMI</span>' +
+        '<span class="oa-link">Check Limit</span>' +
+      '</div>' +
+    '</div>' +
+
+    /* C. Delivery details */
+    '<div class="pdp-section">' +
+      '<div class="pdp-sec-head">Delivery details</div>' +
+      '<div class="dd-row dd-ic-fill">' + ICONS.locPin + locRowHtml + '</div>' +
+      '<div class="dd-row dd-ic-stroke">' + ICONS.truck + '<div>Delivery by <b>' + deliveryDateStr() + '</b></div></div>' +
+      '<div class="dd-row dd-ic-stroke" style="padding-bottom:14px">' + ICONS.store + '<div>Fulfilled by <b>SVPeripherals</b></div></div>' +
+    '</div>' +
+
+    /* D. Trust badges: "Shop with peace of mind" premium styling */
+    '<div class="pdp-section">' +
+      '<div class="trust-row">' +
+        '<div class="trust-item"><div class="trust-circle">' + ICONS.replace7 + '</div><span>7 Days Replacement</span></div>' +
+        '<div class="trust-item"><div class="trust-circle">' + ICONS.cod + '</div><span>Cash on Delivery</span></div>' +
+        '<div class="trust-item"><div class="trust-circle">' + ICONS.assuredShield + '</div><span>Flipkart Assured</span></div>' +
+      '</div>' +
+    '</div>' +
+
+    /* Similar Products carousel */
+    '<div class="pdp-section">' +
+      '<div class="sim-head"><span class="section-label" style="margin-bottom:0">Similar Products</span>' + ICONS.chevron + '</div>' +
+      '<div class="sim-scroll">' + simCards + '</div>' +
+    '</div>' +
+
+    /* Ratings and reviews: edge-to-edge tall review graphic
+       (images/<padded-id>/pr<id>.jpg). Skipped entirely for products
+       without a review image (58-60). */
+    ([58, 59, 60].includes(p.id) ? '' :
+    '<div class="rr-section">' +
+      '<div class="rr-head">Ratings and reviews</div>' +
+      '<div class="rr-hero"><img src="' + imgFolder + 'pr' + p.id + '.jpg" alt="Customer reviews" onerror="if(this.dataset.f==2){this.parentElement.textContent=\'Image\'}else if(this.dataset.f==1){this.dataset.f=2;this.src=this.src.slice(0,-5)+\'.webp\'}else{this.dataset.f=1;this.src=this.src.slice(0,-4)+\'.jpeg\'}" /></div>' +
+    '</div>') +
+
+    /* page-pad-bottom keeps content clear of the sticky Buy/Cart bar */
+    '<div class="page-pad-bottom"></div>' +
+
+    '<div class="sticky-bar">' +
+      '<button class="btn-half btn-cart" onclick="addToCart(' + p.id + ')">Add to Cart</button>' +
+      '<button class="btn-half btn-buy" onclick="startCheckout()">Buy Now</button>' +
+    '</div>';
+
+  /* PDP image auto-slider: 4 slides, 3s interval, manual controls */
+  initSlider('pdp-car', 4, 3000);
+}
+
+/* ============================================================
+   CART PAGE
+   ============================================================ */
+function renderCartPage() {
+  /* ---- State A: Empty cart ---- */
+  if (cart.length === 0) {
+    app().innerHTML =
+      subHeader('My Cart') +
+      '<div class="empty-cart">' +
+        ICONS.cart.replace('<svg ', '<svg width="96" height="96" ') +
+        '<h2>Your cart is empty!</h2>' +
+        '<p>Your cart is currently empty. Explore our products and start adding items now!</p>' +
+        '<button class="btn-blue" onclick="navigate(\'/\')">Shop Now</button>' +
+      '</div>' +
+      bottomNav('cart');
+    return;
+  }
+
+  /* ---- State B: Populated cart ---- */
+  const t = cartTotals();
+
+  const itemsHtml = cart.map((item, idx) =>
+    '<div class="cart-item">' +
+      '<div class="cart-item-top">' +
+        '<div class="cart-thumb-col">' +
+          '<div class="cart-img" onclick="navigate(\'/product/' + item.id + '\')">' + thumbImg(item) + '</div>' +
+          '<select class="qty-select" aria-label="Quantity" onchange="setQty(' + idx + ', this.value)">' +
+            [1, 2, 3, 5].map(q => '<option value="' + q + '"' + ((item.qty || 1) === q ? ' selected' : '') + '>Qty: ' + q + '</option>').join('') +
+          '</select>' +
+        '</div>' +
+        '<div class="cart-item-info">' +
+          '<div class="cart-item-title">' + item.name + '</div>' +
+          '<div class="rating-row" style="margin-bottom:8px">' +
+            '<span class="rating-pill" style="font-size:11px">' + (item.rating || '4.3') + ' ' + ICONS.star + '</span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+            '<span class="p-strike" style="font-size:13px">' + fmt(item.originalPriceNum * (item.qty || 1)) + '</span>' +
+            '<span class="p-discount" style="font-size:13px">' + item.discount + '</span>' +
+            '<span class="p-price" style="font-size:16px">' + fmt(item.priceNum * (item.qty || 1)) + '</span>' +
+          '</div>' +
+          '<div class="p-subtext" style="margin-top:6px;color:var(--text-success);font-weight:600">Free Delivery in Two Days</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="cart-actions">' +
+        '<button onclick="saveForLater(' + idx + ')">Save for later</button>' +
+        '<button onclick="removeFromCart(' + idx + ')">Remove</button>' +
+        '<button onclick="startCheckout()">Buy this now</button>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+
+  /* Address block: mirrors the Order Summary "Delivered to:" card once an
+     address is saved; otherwise keeps the pincode CTA. */
+  let addrBlockHtml;
+  if (savedAddress) {
+    const ad = savedAddress;
+    const addrText = (ad.name || 'User') + ', ' + (ad.phone || '') + '<br/>' +
+      [ad.house, ad.road, ad.city, ad.state].filter(Boolean).join(', ') +
+      (ad.pincode ? ' \u2013 ' + ad.pincode : '');
+    addrBlockHtml =
+      '<div class="card-block" style="margin-top:8px">' +
+        '<div class="deliver-to"><strong>Delivered to:</strong><br/>' + addrText + '</div>' +
+      '</div>';
+  } else {
+    addrBlockHtml =
+      '<div class="cart-block" style="margin-top:8px">' +
+        '<div class="addr-row">' +
+          '<span class="addr-label">From Saved Addresses</span>' +
+          '<button class="btn-outline-blue" onclick="startAddress(\'checkout\')">Enter Delivery Pincode</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  app().innerHTML =
+    subHeader('My Cart') +
+
+    addrBlockHtml +
+
+    '<div class="cart-block">' + itemsHtml + '</div>' +
+
+    '<div class="cart-block">' +
+      '<div class="price-block-inner">' +
+        '<div class="section-label">Price Details</div>' +
+        '<div class="price-row"><span>Price (' + (t.count === 1 ? '1 item' : t.count + ' items') + ')</span><span>' + fmt(t.totalOriginal) + '</span></div>' +
+        '<div class="price-row"><span>Discount</span><span class="green">\u2212 ' + fmt(t.totalDiscount) + '</span></div>' +
+        '<div class="dotted-sep"></div>' +
+        '<div class="price-row" style="font-weight:700;font-size:15px"><span>Total Amount</span><span>' + fmt(t.totalFinal) + '</span></div>' +
+      '</div>' +
+      '<div class="save-banner">You\u2019ll save ' + fmt(t.totalDiscount) + ' on this order!</div>' +
+    '</div>' +
+
+    trustBadgeHtml() +
+
+    '<div class="page-pad-bottom"></div>' +
+
+    '<div class="checkout-bar">' +
+      '<div class="amount">' + fmt(t.totalFinal) + '<i class="info-i">i</i><small>Total Amount</small></div>' +
+      '<button class="btn-yellow" onclick="startCheckout()">Place Order</button>' +
+    '</div>';
+}
+
+/* ============================================================
+   GLOBAL STICKY BOTTOM NAVIGATION
+   ============================================================ */
+function bottomNav(active) {
+  const tabs = [
+    { key: 'home', label: 'Home', path: '/', icon: ICONS.home },
+    { key: 'categories', label: 'Categories', path: '/categories', icon: ICONS.grid },
+    { key: 'orders', label: 'Orders', path: '/orders', icon: ICONS.box },
+    { key: 'account', label: 'Account', path: '/account', icon: ICONS.user },
+    { key: 'cart', label: 'Cart', path: '/cart', icon: ICONS.cart }
+  ];
+  return '<nav class="bottom-nav">' + tabs.map(t =>
+    '<button class="bn-tab' + (active === t.key ? ' active' : '') + '" onclick="navigate(\'' + t.path + '\')" aria-label="' + t.label + '">' +
+      t.icon + '<span>' + t.label + '</span>' +
+    '</button>'
+  ).join('') + '</nav>';
+}
+
+/* ============================================================
+   SIDE MENU DRAWER (homepage hamburger)
+   ============================================================ */
+function toggleMenu(open) {
+  const d = document.getElementById('side-drawer');
+  const o = document.getElementById('drawer-overlay');
+  if (!d || !o) return;
+  d.classList.toggle('open', open);
+  o.classList.toggle('open', open);
+}
+
+function goMenu(path) {
+  toggleMenu(false);
+  navigate(path);
+}
+
+function drawerHtml() {
+  const catRows = CATEGORIES.map(c =>
+    '<div class="drawer-item" onclick="onCategoryClick()">' + (CAT_ICONS[c] || '') + '<span>' + c + '</span></div>'
+  ).join('');
+
+  return '<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu(false)"></div>' +
+    '<div class="drawer" id="side-drawer">' +
+      '<div class="drawer-head">' +
+        '<img class="logo-img" src="' + IMG_LOGO + '" alt="Logo" onerror="this.remove()" />' +
+        (isLoggedIn
+          ? '<span style="color:#fff;font-weight:700;font-size:14px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + userProfile.name + '</span>'
+          : '<button class="btn-login" style="padding:7px 16px;font-size:12px" onclick="goMenu(\'/login\')">Log In</button>') +
+      '</div>' +
+      '<div class="drawer-item" onclick="goMenu(\'/\')">' + ICONS.home + '<span>Home</span></div>' +
+      '<div class="drawer-item" onclick="goMenu(\'/account\')">' + ICONS.user + '<span>My Account</span></div>' +
+      '<div class="drawer-item" onclick="goMenu(\'/cart\')">' + ICONS.cart + '<span>My Cart</span></div>' +
+      '<div class="drawer-item" onclick="goMenu(\'/orders\')">' + ICONS.box + '<span>My Orders</span></div>' +
+      '<div class="drawer-title">Shop by Category</div>' +
+      catRows +
+      '<div class="drawer-title">More</div>' +
+      '<div class="drawer-item">' + ICONS.bell + '<span>Notification Settings</span></div>' +
+      '<div class="drawer-item">' + ICONS.headset + '<span>Help Center</span></div>' +
+      '<div class="drawer-item">' + ICONS.doc + '<span>Terms, Policies and Licenses</span></div>' +
+    '</div>';
+}
+
+/* ============================================================
+   CATEGORIES PAGE
+   ============================================================ */
+function renderCategoriesPage() {
+  /* Left sidebar: vertical icon tabs; the first is active. Tapping any
+     tab re-shuffles the catalogue and routes to the all-products grid. */
+  const tabs = CATEGORIES.map((c, i) =>
+    '<div class="catv-tab' + (i === 0 ? ' active' : '') + '" onclick="onCategoryClick()">' +
+      '<div class="catv-ic">' + (CAT_ICONS[c] || '') + '</div>' +
+      '<span>' + c + '</span>' +
+    '</div>'
+  ).join('');
+
+  /* Right content: sections of 3-column grids filled with random
+     products (photo + green BUY NOW tag) */
+  const cell = p =>
+    '<div class="catg-cell" onclick="navigate(\'/product/' + p.id + '\')">' +
+      '<div class="catg-img">' + thumbImg(p) + '</div>' +
+      '<span class="catg-buy">BUY NOW</span>' +
+    '</div>';
+  const sec = (title, items) =>
+    '<div class="catg-sec">' +
+      '<div class="catg-head">' + title + '</div>' +
+      '<div class="catg-grid">' + items.map(cell).join('') + '</div>' +
+    '</div>';
+  const s1 = shuffleArray(PRODUCTS.slice()).slice(0, 9);
+  const s2 = shuffleArray(PRODUCTS.slice()).slice(0, 9);
+
+  app().innerHTML =
+    '<header class="header">' +
+      '<div class="h-left">' +
+        '<button class="icon-btn" onclick="navigate(\'/\')" aria-label="Back">' + ICONS.back + '</button>' +
+        '<span style="font-size:16px;font-weight:700">All Categories</span>' +
+      '</div>' +
+      '<div class="h-right">' +
+        '<button class="icon-btn" aria-label="Search">' + ICONS.search + '</button>' +
+        cartIconWithBadge() +
+      '</div>' +
+    '</header>' +
+    '<div class="catv-wrap">' +
+      '<aside class="catv-side">' + tabs + '</aside>' +
+      '<main class="catv-main">' +
+        sec('Popular Store', s1) +
+        sec('New & Upcoming', s2) +
+      '</main>' +
+    '</div>' +
+    bottomNav('categories');
+}
+
+/* ============================================================
+   ACCOUNT / PROFILE PAGE
+   ============================================================ */
+function renderAccountPage() {
+  function acctItem(icon, label, sub) {
+    return '<div class="acct-item">' +
+      '<span class="acct-ic">' + icon + '</span>' +
+      '<div class="acct-text"><div class="acct-label">' + label + '</div>' +
+        (sub ? '<div class="acct-sub">' + sub + '</div>' : '') +
+      '</div>' +
+      '<span class="acct-chev">' + ICONS.chevron + '</span>' +
+    '</div>';
+  }
+
+  app().innerHTML =
+    '<header class="header">' +
+      '<div class="h-left">' +
+        '<button class="icon-btn" onclick="navigate(\'/\')" aria-label="Back">' + ICONS.back + '</button>' +
+        '<span style="font-size:16px;font-weight:700">Account</span>' +
+      '</div>' +
+    '</header>' +
+    '<div class="account-page">' +
+    (isLoggedIn
+      ? '<div class="login-banner">' +
+          '<div><div class="user-name">' + userProfile.name + '</div>' +
+          '<div class="user-phone">' + (userProfile.phone ? '+91 ' + userProfile.phone : (userProfile.email || '')) + '</div></div>' +
+          '<button class="btn-logout" onclick="logOut()">Log Out</button>' +
+        '</div>'
+      : '<div class="login-banner">' +
+          '<span>Log in to get exclusive offers</span>' +
+          '<button class="btn-login" onclick="navigate(\'/login\')">Log In</button>' +
+        '</div>') +
+      '<div class="acct-section-title">Finance On UPI</div>' +
+      '<div class="acct-card">' +
+        acctItem(ICONS.doc, 'superCard | Buy Now Pay later in 3', 'Enjoy 3% cashback | Activate Fk UPI and pay in 3 months') +
+      '</div>' +
+      '<div class="acct-section-title">Account Settings</div>' +
+      '<div class="acct-card">' +
+        acctItem(ICONS.lang, 'Select Language') +
+        acctItem(ICONS.bell, 'Notification Settings') +
+        acctItem(ICONS.headset, 'Help Center') +
+      '</div>' +
+      '<div class="acct-section-title">Earn with Flipkart</div>' +
+      '<div class="acct-card">' +
+        acctItem(ICONS.store, 'Sell on Flipkart') +
+      '</div>' +
+      '<div class="acct-section-title">Feedback & Information</div>' +
+      '<div class="acct-card">' +
+        acctItem(ICONS.doc, 'Terms, Policies and Licenses') +
+        acctItem(ICONS.question, 'Browse FAQs') +
+      '</div>' +
+    '</div>' +
+    bottomNav('account');
+}
+
+/* ============================================================
+   LOGIN FLOW (two steps: phone, then name)
+   ============================================================ */
+function loginHeader() {
+  return '<header class="login-header">' +
+    '<button class="icon-btn" onclick="navigate(\'/\')" aria-label="Close">' + ICONS.close + '</button>' +
+    '<img class="logo-img" src="' + IMG_LOGO + '" alt="Logo" onerror="this.remove()" />' +
+    '<span style="width:32px;flex-shrink:0"></span>' +
+  '</header>';
+}
+
+function onPhoneInput(el) {
+  /* strictly numeric, max 10 digits, must start with 6-9 */
+  el.value = el.value.replace(/\D/g, '').slice(0, 10);
+  const btn = document.getElementById('login-cta');
+  const err = document.getElementById('login-err');
+  const startsValid = el.value.length === 0 || /^[6-9]/.test(el.value);
+  if (err) err.style.display = startsValid ? 'none' : 'block';
+  const ok = el.value.length === 10 && /^[6-9]/.test(el.value);
+  btn.classList.toggle('enabled', ok);
+  btn.disabled = !ok;
+}
+
+/* ---- Email login mode ---- */
+function toggleLoginMode() {
+  loginMode = loginMode === 'phone' ? 'email' : 'phone';
+  /* Full re-render swaps label, input type, prefix, and link text
+     instantly, and clears any existing input value. */
+  renderLoginPhonePage();
+}
+
+function validEmail(v) {
+  return v.includes('@') && v.includes('.');
+}
+
+function onEmailInput(el) {
+  const btn = document.getElementById('login-cta');
+  const err = document.getElementById('login-email-error');
+  const v = el.value.trim();
+  const ok = validEmail(v);
+  if (err) err.style.display = (v.length > 0 && !ok) ? 'block' : 'none';
+  btn.classList.toggle('enabled', ok);
+  btn.disabled = !ok;
+}
+
+/* Unified Continue handler for both login modes */
+function submitLogin() {
+  if (loginMode === 'email') {
+    const el = document.getElementById('login-email');
+    const v = el ? el.value.trim() : '';
+    if (!validEmail(v)) {
+      const err = document.getElementById('login-email-error');
+      if (err) err.style.display = 'block';
+      return;
+    }
+    pendingEmail = v;
+    pendingPhone = '';
+    navigate('/login/name');
+    return;
+  }
+  const el = document.getElementById('login-phone');
+  if (!el || el.value.length !== 10 || !/^[6-9]/.test(el.value)) return;
+  pendingPhone = el.value;
+  pendingEmail = '';
+  navigate('/login/name');
+}
+
+function onNameInput(el) {
+  /* requires first and last name (at least one space between words) */
+  const btn = document.getElementById('login-cta');
+  const err = document.getElementById('login-err');
+  const v = el.value.trim();
+  const ok = v.length > 0 && v.indexOf(' ') > 0;
+  if (err) err.style.display = (el.value.length > 0 && !ok) ? 'block' : 'none';
+  btn.classList.toggle('enabled', ok);
+  btn.disabled = !ok;
+}
+
+function finishLogin() {
+  const el = document.getElementById('login-name');
+  if (!el) return;
+  const v = el.value.trim();
+  if (v.length === 0 || v.indexOf(' ') < 1) {
+    const err = document.getElementById('login-err');
+    if (err) err.style.display = 'block';
+    return;
+  }
+  userProfile = { name: v, phone: pendingPhone, email: pendingEmail };
+  isLoggedIn = true;
+  pendingPhone = '';
+  pendingEmail = '';
+  const dest = postLoginRedirect || '/account';
+  postLoginRedirect = '';
+  navigate(dest);
+}
+
+function logOut() {
+  isLoggedIn = false;
+  userProfile = { name: '', phone: '', email: '' };
+  renderAccountPage();
+}
+
+/* Checkout authentication guard with smart address skip */
+function startCheckout() {
+  addressEntrySource = 'checkout';
+  state.retryOrderId = null; /* fresh checkout, not a payment retry */
+  if (!isLoggedIn) {
+    postLoginRedirect = '/checkout/address';
+    navigate('/login');
+  } else if (savedAddress === null) {
+    navigate('/checkout/address');
+  } else {
+    navigate('/checkout/summary');
+  }
+}
+
+/* Delivery-location entry points (homepage bar, cart pincode button).
+   source: 'homepage' (default) sends the user back home after saving;
+   anything else continues into the checkout flow. */
+function startAddress(source) {
+  addressEntrySource = source || 'homepage';
+  if (!isLoggedIn) {
+    postLoginRedirect = '/checkout/address';
+    navigate('/login');
+  } else {
+    navigate('/checkout/address');
+  }
+}
+
+function renderLoginPhonePage() {
+  const isEmail = loginMode === 'email';
+
+  /* Mode-aware field: input type, label, placeholder and prefix all
+     swap with loginMode. Re-rendering also clears any previous value
+     so the CTA always resets to its disabled/grey state. */
+  const fieldHtml = isEmail
+    ? '<div class="float-field">' +
+        '<label>Email-ID</label>' +
+        '<input id="login-email" type="email" inputmode="email" placeholder="Enter your Email-ID" oninput="onEmailInput(this)" autocomplete="email" />' +
+      '</div>' +
+      '<div class="login-err" id="login-email-error" style="display:none;text-align:left;margin-top:8px;margin-bottom:0">Please enter a valid Email-ID</div>'
+    : '<div class="float-field">' +
+        '<label>Phone Number</label>' +
+        '<span class="prefix">+91</span>' +
+        '<input id="login-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter your phone number" oninput="onPhoneInput(this)" autocomplete="tel" />' +
+      '</div>';
+
+  app().innerHTML =
+    loginHeader() +
+    '<div class="login-body">' +
+      '<div class="login-title">Log in for the best experience</div>' +
+      '<div class="login-sub">' + (isEmail ? 'Enter your Email-ID to continue' : 'Enter your phone number to continue') + '</div>' +
+      fieldHtml +
+      /* Inline onclick survives dynamic innerHTML injection (SPA routing) */
+      '<div class="login-alt" onclick="toggleLoginMode()">' + (isEmail ? 'Use Phone Number' : 'Use Email-ID') + '</div>' +
+      '<div class="login-terms">By continuing, you confirm that you are above 18 years of age, and you agree to the Flipkart\u2019s <span class="blue">Terms of Use</span> and <span class="blue">Privacy Policy</span></div>' +
+    '</div>' +
+    '<div class="login-cta-bar">' +
+      '<div class="login-err" id="login-err" style="display:none">Please enter a valid phone number</div>' +
+      '<button class="btn-cta" id="login-cta" disabled onclick="submitLogin()">Continue</button>' +
+    '</div>';
+}
+
+function renderLoginNamePage() {
+  if (!pendingPhone && !pendingEmail) { navigate('/login'); return; }
+  app().innerHTML =
+    loginHeader() +
+    '<div class="login-body">' +
+      '<div class="login-title">Just one more step</div>' +
+      '<div class="login-sub">Enter your full name to set up your account</div>' +
+      '<div class="float-field">' +
+        '<label>Full Name</label>' +
+        '<input id="login-name" type="text" oninput="onNameInput(this)" autocomplete="name" />' +
+      '</div>' +
+    '</div>' +
+    '<div class="login-cta-bar">' +
+      '<div class="login-err" id="login-err" style="display:none">Enter you valid Real name</div>' +
+      '<button class="btn-cta" id="login-cta" disabled onclick="finishLogin()">Finish</button>' +
+    '</div>';
+}
+
+/* ============================================================
+   CHECKOUT STEP 1: ADDRESS
+   ============================================================ */
+const INDIAN_STATES = [
+  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
+  'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
+  'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab',
+  'Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh',
+  'Uttarakhand','West Bengal','Andaman and Nicobar Islands','Chandigarh',
+  'Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir',
+  'Ladakh','Lakshadweep','Puducherry'
+];
+
+/* ---- Address form validation ---- */
+/* min 3 chars AND no character repeated 3+ times consecutively (anti-spam) */
+function validText(v) {
+  return v.length >= 3 && !/(.)\1{2,}/.test(v);
+}
+
+function addrRules() {
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  return {
+    pin: /^\d{6}$/.test(v('f-pin')),
+    city: validText(v('f-city')),
+    state: v('f-state') !== '',
+    house: validText(v('f-house')),
+    road: validText(v('f-road'))
+  };
+}
+
+function showAddrError(key, show) {
+  const el = document.getElementById('err-' + key);
+  if (el) el.style.display = show ? 'block' : 'none';
+}
+
+/* Re-evaluates every rule; toggles the orange button state.
+   When showErrors is true, reveals every failing field's message. */
+function validateAddress(showErrors) {
+  const r = addrRules();
+  const all = r.pin && r.city && r.state && r.house && r.road;
+  const btn = document.getElementById('save-addr-btn');
+  if (btn) btn.classList.toggle('enabled', all);
+  const mainErr = document.getElementById('address-main-error');
+  if (mainErr && all) mainErr.style.display = 'none';
+  if (showErrors) {
+    showAddrError('pin', !r.pin);
+    showAddrError('city', !r.city);
+    showAddrError('state', !r.state);
+    showAddrError('house', !r.house);
+    showAddrError('road', !r.road);
+  }
+  return all;
+}
+
+/* oninput: clear the field's error once fixed, keep button in sync */
+function onAddrInput(key) {
+  const r = addrRules();
+  if (r[key]) showAddrError(key, false);
+  validateAddress(false);
+}
+
+/* onblur / onchange: surface the field's error if still invalid */
+function onAddrBlur(key) {
+  const r = addrRules();
+  showAddrError(key, !r[key]);
+}
+
+function saveAddress() {
+  if (!validateAddress(true)) {
+    const mainErr = document.getElementById('address-main-error');
+    if (mainErr) mainErr.style.display = 'block';
+    return;
+  }
+  const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  savedAddress = {
+    name: val('f-name'),
+    phone: val('f-mobile'),
+    pincode: val('f-pin'),
+    city: val('f-city'),
+    state: val('f-state'),
+    house: val('f-house'),
+    road: val('f-road')
+  };
+  /* Context-aware routing: return home if the flow began on the
+     homepage location bar, otherwise continue into checkout. */
+  if (addressEntrySource === 'homepage') {
+    navigate('/');
+  } else {
+    navigate('/checkout/summary');
+  }
+}
+
+function renderAddressPage() {
+  const a = savedAddress || {};
+  const preName = a.name || (isLoggedIn ? userProfile.name : '');
+  const prePhone = a.phone || (isLoggedIn ? userProfile.phone : '');
+  const stateOptions = '<option value="" disabled' + (a.state ? '' : ' selected') + '>Select State</option>' +
+    INDIAN_STATES.map(s => '<option value="' + s + '"' + (a.state === s ? ' selected' : '') + '>' + s + '</option>').join('');
+
+  app().innerHTML =
+    subHeader('Add delivery address') +
+    checkoutStepper(1) +
+    '<form class="address-form" onsubmit="event.preventDefault(); saveAddress()">' +
+      '<div class="form-field"><label for="f-name">Full Name</label>' +
+        '<input id="f-name" type="text" placeholder="Enter full name" autocomplete="name" value="' + preName + '" /></div>' +
+      '<div class="form-field"><label for="f-mobile">Mobile number</label>' +
+        '<input id="f-mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel" value="' + prePhone + '" /></div>' +
+      '<div class="form-row">' +
+        '<div class="form-field"><label for="f-pin">Pincode</label>' +
+          '<input id="f-pin" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit pincode" autocomplete="postal-code" value="' + (a.pincode || '') + '" oninput="this.value=this.value.replace(/\\D/g,\'\').slice(0,6); onAddrInput(\'pin\')" onblur="onAddrBlur(\'pin\')" />' +
+          '<span class="field-err" id="err-pin">Enter Valid pincode</span></div>' +
+        '<div class="form-field"><label for="f-city">City</label>' +
+          '<input id="f-city" type="text" placeholder="City" autocomplete="address-level2" value="' + (a.city || '') + '" oninput="onAddrInput(\'city\')" onblur="onAddrBlur(\'city\')" />' +
+          '<span class="field-err" id="err-city">Enter Valid City</span></div>' +
+      '</div>' +
+      '<div class="form-field"><label for="f-state">State</label>' +
+        '<select id="f-state" onchange="onAddrInput(\'state\'); onAddrBlur(\'state\')">' + stateOptions + '</select>' +
+        '<span class="field-err" id="err-state">Select a State</span></div>' +
+      '<div class="form-field"><label for="f-house">House No., Building Name</label>' +
+        '<input id="f-house" type="text" placeholder="House No., Building Name" value="' + (a.house || '') + '" oninput="onAddrInput(\'house\')" onblur="onAddrBlur(\'house\')" />' +
+        '<span class="field-err" id="err-house">Enter valid address</span></div>' +
+      '<div class="form-field" style="border-bottom:none"><label for="f-road">Road name, Area, Colony</label>' +
+        '<input id="f-road" type="text" placeholder="Road name, Area, Colony" value="' + (a.road || '') + '" oninput="onAddrInput(\'road\')" onblur="onAddrBlur(\'road\')" />' +
+        '<span class="field-err" id="err-road">Enter valid address</span></div>' +
+    '</form>' +
+    '<div class="sticky-bar" style="flex-direction:column">' +
+      '<div class="sticky-bar-single" style="width:100%">' +
+        '<div id="address-main-error" style="color:red;font-size:12px;text-align:center;margin-bottom:8px;display:none">Complete filling up your address</div>' +
+        '<button class="btn-save" id="save-addr-btn" onclick="saveAddress()">Save Address</button>' +
+      '</div>' +
+    '</div>';
+
+  /* prefill case: enable the button immediately if everything is valid */
+  validateAddress(false);
+}
+
+/* ============================================================
+   CHECKOUT STEP 2: ORDER SUMMARY
+   ============================================================ */
+function renderSummaryPage() {
+  const items = checkoutItems();
+
+  const itemsHtml = items.map(p =>
+    '<div class="summary-item">' +
+      '<div class="summary-thumb">' + thumbImg(p) + '</div>' +
+      '<div style="flex:1">' +
+        '<div style="font-size:14px;font-weight:500;margin-bottom:4px">' + p.name + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">Qty: ' + (p.qty || 1) + '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px">' +
+          '<span class="p-price">' + fmt(p.priceNum) + '</span>' +
+          '<span class="p-strike" style="font-size:12px">' + fmt(p.originalPriceNum) + '</span>' +
+          '<span class="p-discount" style="font-size:12px">' + p.discount + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+
+  const ad = savedAddress;
+  const addrHtml = ad
+    ? (ad.name || 'User') + ', ' + (ad.phone || '') + '<br/>' +
+      [ad.house, ad.road, ad.city, ad.state].filter(Boolean).join(', ') +
+      (ad.pincode ? ' \u2013 ' + ad.pincode : '')
+    : 'John Doe, 9999999999<br/>221B, Baker Street, MG Road, Bengaluru, Karnataka \u2013 560001';
+
+  app().innerHTML =
+    subHeader('Order Summary') +
+    checkoutStepper(2) +
+
+    '<div class="card-block" style="margin-top:0">' +
+      '<div class="deliver-to"><strong>Delivered to:</strong><br/>' + addrHtml + '</div>' +
+    '</div>' +
+
+    '<div class="card-block">' + itemsHtml + '</div>' +
+
+    priceDetailsBlock(items) +
+    trustBadgeHtml() +
+    '<div class="page-pad-bottom"></div>' +
+
+    '<div class="checkout-bar">' +
+      '<div class="amount">' + fmt(totalsFor(items).totalFinal) + '<small>Total Amount</small></div>' +
+      '<button class="btn-yellow" onclick="navigate(\'/checkout/payment\')">Continue</button>' +
+    '</div>';
+}
+
+/* ============================================================
+   CHECKOUT STEP 3: PAYMENTS
+   ============================================================ */
+/* Tapping an option only SELECTS it (radio style); the redirect / QR
+   modal is deferred until the user hits Place Order. */
+function selectPayment(name) {
+  state.paymentMethod = name;
+  document.querySelectorAll('.pay-option').forEach(function (el) {
+    el.classList.toggle('selected', el.getAttribute('data-pay') === name);
+  });
+}
+
+let processingTimer = null;
+
+function placeOrder() {
+  const method = state.paymentMethod;
+
+  if (method === 'SCAN TO PAY') {
+    /* No processing timer here: the success animation fires only when
+       the QR session expires (see the countdown in openQRModal) */
+    openQRModal();
+  } else {
+    initiateUPIPayment(method);
+    /* UPI intents: exactly 60 seconds of processing, then the animation */
+    clearTimeout(processingTimer);
+    processingTimer = setTimeout(function () {
+      processingTimer = null;
+      finalizeOrder();
+    }, 60000);
+    /* Dynamic red status text above the button at 10s / 25s / 40s */
+    injectPayStatusSlot();
+    schedulePayStatus('pay-status');
+  }
+
+  /* Loading state, applied AFTER openQRModal's safety-close (which
+     restores any previous button state) so it is never wiped */
+  const btn = document.querySelector('.checkout-bar .btn-yellow');
+  if (btn) {
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+    btn.style.opacity = '.75';
+  }
+}
+
+/* Restore the Place Order / Complete Payment button (e.g. when the
+   user manually closes the QR sheet and wants to retry) */
+function restoreOrderButton() {
+  const btn = document.querySelector('.checkout-bar .btn-yellow');
+  if (btn && btn.disabled) {
+    btn.textContent = btn.dataset.label || 'Order Now';
+    btn.disabled = false;
+    btn.style.opacity = '';
+  }
+}
+
+/* ---- Dynamic payment-verification status text ---- */
+let statusTimers = [];
+
+function clearStatusTimers() {
+  statusTimers.forEach(clearTimeout);
+  statusTimers = [];
+}
+
+/* Full-width slot injected as the first row of the sticky bar,
+   directly above the Place Order / Complete Payment button */
+function injectPayStatusSlot() {
+  if (document.getElementById('pay-status')) return;
+  const bar = document.querySelector('.checkout-bar');
+  if (!bar) return;
+  bar.style.flexWrap = 'wrap';
+  const el = document.createElement('div');
+  el.id = 'pay-status';
+  el.className = 'pay-status';
+  bar.insertBefore(el, bar.firstChild);
+}
+
+function setPayStatus(targetId, msg) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  el.innerHTML = '<span class="spinner red"></span><span>' + msg + '</span>';
+  el.classList.add('show'); /* .4s fade-in */
+}
+
+/* 10s / 25s / 40s message sequence (shared by UPI bar + QR modal) */
+function schedulePayStatus(targetId) {
+  clearStatusTimers();
+  statusTimers.push(setTimeout(function () { setPayStatus(targetId, 'Please wait checking for payment'); }, 10000));
+  statusTimers.push(setTimeout(function () { setPayStatus(targetId, 'Verifying if Payment is received'); }, 25000));
+  statusTimers.push(setTimeout(function () { setPayStatus(targetId, 'Waiting for Payment to be completed'); }, 40000));
+}
+
+/* Shared payment-method selector (main checkout + retry page) */
+function payOptionsHtml() {
+  const options = [
+    { name: 'PhonePe',     logo: 'images/upi-logo/phonepe.png' },
+    { name: 'Paytm',       logo: 'images/upi-logo/paytm.png' },
+    { name: 'Google Pay',  logo: 'images/upi-logo/gpay.png' },
+    { name: 'SCAN TO PAY', logo: 'images/upi-logo/scanpay.png' }
+  ];
+  return options.map(o =>
+    '<div class="pay-option' + (state.paymentMethod === o.name ? ' selected' : '') + '" data-pay="' + o.name + '" onclick="selectPayment(\'' + o.name + '\')">' +
+      '<span class="pay-logo"><img src="' + o.logo + '" alt="' + o.name + '" onerror="this.remove()" /></span>' +
+      '<div class="pay-name">' + o.name + '</div>' +
+      '<span class="radio-dot"></span>' +
+    '</div>'
+  ).join('');
+}
+
+/* Record the purchase and play the success animation.
+   Normal flow: move the cart into orders (payment pending) and clear it.
+   Retry flow (state.retryOrderId): the order already exists. */
+function finalizeOrder() {
+  if (state.retryOrderId) {
+    state.retryOrderId = null;
+    navigate('/order-success');
+    return;
+  }
+  const items = checkoutItems();
+  const t = totalsFor(items);
+  orders.unshift({
+    orderId: orderSeq++,
+    items: items.map(it => Object.assign({}, it)),
+    amount: t.totalFinal,
+    placedAt: Date.now(),
+    status: 'PENDING_PAYMENT'
+  });
+  cart = [];
+  refreshCartBadge();
+  navigate('/order-success');
+}
+
+/* ---- Dynamic amount: single source of truth, pulled from cart state.
+   Same computation the Order Summary uses (cart, or Buy Now item). ---- */
+function getPayableAmount() {
+  /* Retry flow pays the pending order's amount; the normal flow pays
+     the live cart / Buy Now total */
+  if (state.retryOrderId) {
+    const o = orders.find(x => x.orderId === state.retryOrderId);
+    if (o) return o.amount;
+  }
+  return totalsFor(checkoutItems()).totalFinal;
+}
+
+/* ---- UPI deep link intent with setTimeout fallback ----
+   Note: PhonePe and Paytm register their deep link host as "pay" (no "upi/"
+   path); only Google Pay parses "upi/pay". Using the wrong host still opens
+   the app but drops the query params (no VPA / amount autofill). */
+const UPI_SCHEMES = {
+  'PhonePe':    'phonepe://pay',
+  'Paytm':      'paytmmp://pay',
+  'Google Pay': 'gpay://upi/pay'
+};
+
+function initiateUPIPayment(appName) {
+  const scheme = UPI_SCHEMES[appName];
+  if (!scheme) return;
+
+  const amount = getPayableAmount();
+  const deepLink = scheme + '?pa=filipkart@nyes&pn=TestStore&am=' + amount + '&cu=INR';
+
+  /* If the OS hands control to a UPI app, the page blurs / becomes hidden.
+     We flag that so the fallback alert only fires when NO app opened. */
+  let appOpened = false;
+  const markOpened = function () { if (document.hidden) appOpened = true; };
+  const onBlur = function () { appOpened = true; };
+  document.addEventListener('visibilitychange', markOpened);
+  window.addEventListener('blur', onBlur);
+
+  window.location.href = deepLink;
+
+  /* Cleanup after the simulated app switch; order completion is now
+     owned by the 20-second processing timer in placeOrder() */
+  setTimeout(function () {
+    document.removeEventListener('visibilitychange', markOpened);
+    window.removeEventListener('blur', onBlur);
+  }, 2000);
+}
+
+/* ---- SCAN TO PAY: premium centered QR modal + silent expiration ---- */
+let qrInterval = null;
+const QR_SESSION_SEC = 5 * 60;
+
+function openQRModal() {
+  closeQRModal(); /* safety: never stack two modals / intervals */
+
+  /* Fresh attempt: hide any previous timeout error on the page */
+  const prevErr = document.getElementById('payment-timeout-error');
+  if (prevErr) prevErr.style.display = 'none';
+
+  /* Dynamic UPI QR: the amount is pulled live from the cart / Buy Now
+     product, so every product generates its own payment QR.
+     UPI link format: upi://pay?pa=filipkart@nyes&pn=Test%20Pay&am=<amount>&cu=INR */
+  const amount = getPayableAmount();
+  const upiLink = 'upi://pay?pa=filipkart@nyes&pn=Test%20Pay&am=' + amount + '&cu=INR';
+  const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(upiLink);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'qr-overlay';
+  overlay.id = 'qr-modal';
+  overlay.innerHTML =
+    '<div class="qr-card">' +
+      '<button class="qr-close" aria-label="Close" onclick="closeQRModal()">' + ICONS.close + '</button>' +
+      '<div class="qr-title">Scan to Pay</div>' +
+      '<div class="qr-sub">Use any UPI app to complete the payment</div>' +
+      '<div class="qr-box"><img src="' + qrSrc + '" alt="UPI payment QR code" onerror="this.parentElement.textContent=\'QR unavailable\'" /></div>' +
+      '<div class="qr-expiry">QR expires in <span id="qr-timer">05:00</span></div>' +
+      '<div class="pay-status" id="qr-status"></div>' +
+      '<button class="qr-wait-btn">Waiting for Payment</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  /* Same 10s / 25s / 40s red status sequence, below the QR countdown */
+  schedulePayStatus('qr-status');
+
+  let remaining = QR_SESSION_SEC;
+  qrInterval = setInterval(function () {
+    remaining--;
+    const el = document.getElementById('qr-timer');
+    if (el) el.textContent = pad2(Math.floor(remaining / 60)) + ':' + pad2(remaining % 60);
+    if (remaining <= 0) {
+      /* SCAN TO PAY: the order-placed animation appears exactly when
+         the QR expires */
+      closeQRModal();
+      finalizeOrder();
+    }
+  }, 1000);
+}
+
+/* Manual close (X) and programmatic close both land here: clears the
+   interval and removes the modal WITHOUT showing the timeout error */
+function closeQRModal() {
+  if (qrInterval) { clearInterval(qrInterval); qrInterval = null; }
+  const m = document.getElementById('qr-modal');
+  if (m) m.remove();
+  restoreOrderButton(); /* manual X close: let the user retry */
+}
+
+function renderPaymentPage() {
+  state.retryOrderId = null; /* normal checkout, not a retry */
+  const items = checkoutItems();
+  const optionHtml = payOptionsHtml();
+
+  app().innerHTML =
+    subHeader('Payments') +
+    checkoutStepper(3) +
+    '<div style="padding-top:4px;padding-bottom:8px">' + optionHtml + '</div>' +
+    priceDetailsBlock(items) +
+    trustBadgeHtml() +
+    '<div class="page-pad-bottom"></div>' +
+    '<div class="checkout-bar" style="flex-wrap:wrap">' +
+      '<div id="payment-timeout-error" style="color: red; font-size: 12px; text-align: center; margin-bottom: 8px; display: none; font-weight: 500; width: 100%;">Session timed out, retry payment</div>' +
+      '<div class="amount">' + fmt(totalsFor(items).totalFinal) + '<small>Total Amount</small></div>' +
+      '<button class="btn-yellow" onclick="placeOrder()">Order Now</button>' +
+    '</div>';
+}
+
+/* ============================================================
+   POST-PURCHASE: MY ORDERS / ORDER DETAILS / RETRY / SUCCESS
+   ============================================================ */
+function renderOrdersPage() {
+  /* ---- Empty state ---- */
+  if (orders.length === 0) {
+    app().innerHTML =
+      subHeader('My Orders', '/') +
+      '<div class="empty-cart">' +
+        ICONS.box.replace('<svg ', '<svg width="96" height="96" ') +
+        '<h2>Your orders is empty, buy something right now</h2>' +
+        '<p>Explore today\u2019s deals and place your first order.</p>' +
+        '<button class="btn-blue" onclick="navigate(\'/\')">Buy Now</button>' +
+      '</div>' +
+      bottomNav('orders');
+    return;
+  }
+
+  /* ---- Populated list ---- */
+  const rows = orders.map(o => {
+    const first = o.items[0];
+    const extra = o.items.length > 1 ? ' +' + (o.items.length - 1) + ' more' : '';
+    const cancelled = o.status === 'Cancelled';
+    return '<div class="order-card" onclick="navigate(\'/order-details/' + o.orderId + '\')">' +
+      '<div class="order-thumb">' + thumbImg(first) + '</div>' +
+      '<div class="order-info">' +
+        '<div class="order-name">' + first.name + extra + '</div>' +
+        (cancelled ? '' : '<div class="order-warn">Waiting for payment to be completed.</div>') +
+      '</div>' +
+      /* margin-left:auto pins the status + arrow to the far right */
+      '<div class="order-right">' +
+        '<span class="order-status' + (cancelled ? ' cancelled' : '') + '">' + (cancelled ? 'Cancelled' : 'Delivery Pending') + '</span>' +
+        '<span class="acct-chev">' + ICONS.chevron + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  app().innerHTML =
+    subHeader('My Orders', '/') +
+    '<div style="padding-bottom:70px">' + rows + '</div>' +
+    bottomNav('orders');
+}
+
+function renderOrderDetailsPage(id) {
+  const o = orders.find(x => x.orderId === id);
+  if (!o) { navigate('/orders'); return; }
+  const first = o.items[0];
+  const cancelled = o.status === 'Cancelled';
+
+  /* Authentic-looking order id + future dates for the tracking steps */
+  const displayId = 'OD3286385680412471' + pad2(o.orderId);
+  const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const fdate = days => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.getDate() + ' ' + M[d.getMonth()];
+  };
+
+  const starOutline = '<svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.2 6L12 16.8l-5.5 2.8 1.2-6L3.2 9.4l6.1-.8z"/></svg>';
+  const stars = starOutline + starOutline + starOutline + starOutline + starOutline;
+
+  const greyStep = title =>
+    '<div class="tl-row grey"><span class="tl-marker"><span class="tl-dot-solid"></span></span>' +
+    '<div class="tl-title">' + title + '</div></div>';
+
+  app().innerHTML =
+    subHeader('Order Details') +
+    '<div class="od-idbar">Order ID - ' + displayId + '</div>' +
+    '<div class="account-page" style="padding-bottom:70px">' +
+
+      /* Payment error banner (removed entirely for cancelled orders) */
+      (cancelled ? '' :
+      '<div class="pay-warn">' +
+        '<div class="pay-warn-head"><span class="spinner red"></span><span>Waiting for Payment to be completed</span></div>' +
+        '<div class="pay-warn-sub">Your payment is under verification, please complete your payment if not paid yet</div>' +
+        '<button class="btn-complete-pay" onclick="navigate(\'/checkout/retry/' + o.orderId + '\')">Complete Payment</button>' +
+        '<div class="pay-warn-note">If paid, Please wait for payment to be completed. Payment verification usually completes in 0-72 hours</div>' +
+      '</div>') +
+
+      /* Product details */
+      '<div class="od-card"><div class="od-pad summary-item">' +
+        '<div class="summary-thumb">' + thumbImg(first) + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-size:14px;font-weight:500">' + first.name + '</div>' +
+          '<div style="font-size:12px;color:var(--text-muted);margin-top:4px">Seller: SVPeripherals</div>' +
+          '<div style="font-size:12px;color:var(--text-muted);margin-top:2px">Qty: ' + (first.qty || 1) +
+            (o.items.length > 1 ? ' \u00B7 +' + (o.items.length - 1) + ' more item(s)' : '') + '</div>' +
+          '<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px">' +
+            '<span class="p-price">' + fmt(o.amount) + '</span>' +
+            '<span style="color:var(--text-success);font-size:12px;font-weight:600">7 offers</span>' +
+          '</div>' +
+        '</div>' +
+      '</div></div>' +
+
+      /* Open Box Delivery */
+      '<div class="od-card">' +
+        '<div class="ob-head"><span>Open Box Delivery will be done</span><span class="ob-link">View Checks</span></div>' +
+        '<div class="ob-row">' +
+          '<div class="ob-item"><div class="ob-ic">' + ICONS.box + '</div><span>Sealed package will be opened</span></div>' +
+          '<div class="ob-item"><div class="ob-ic">' + ICONS.shield + '</div><span>Checks will be performed</span></div>' +
+          '<div class="ob-item"><div class="ob-ic">' + ICONS.headset + '</div><span>Share OTP to confirm delivery</span></div>' +
+        '</div>' +
+      '</div>' +
+
+      /* Order tracking: vertical stepper, dotted connector behind dots */
+      '<div class="od-card">' +
+        '<div class="od-pad" style="padding-bottom:0;font-size:15px;font-weight:600">Order Tracking</div>' +
+        '<div class="tl-wrap">' +
+          '<div class="tl-line"></div>' +
+          (cancelled
+            ? '<div class="tl-row cancelled">' +
+                '<span class="tl-marker"><span class="tl-x">\u2715</span></span>' +
+                '<div class="tl-title">Order Cancelled</div>' +
+              '</div>'
+            : '<div class="tl-row active">' +
+                '<span class="tl-marker"><span class="spinner blue"></span></span>' +
+                '<div><div class="tl-title">Order Placed</div>' +
+                '<div class="tl-warn">Waiting for payment to be Completed</div></div>' +
+              '</div>') +
+          greyStep('Shipped, Expected By ' + fdate(2)) +
+          greyStep('Out For Delivery') +
+          greyStep('Delivery, ' + fdate(3) + ' By 9 PM') +
+        '</div>' +
+        '<div class="tl-see-all">See All Updates &gt;</div>' +
+      '</div>' +
+
+      /* Cancel / Need help (Cancel hidden once already cancelled) */
+      '<div class="od-card od-actions">' +
+        (cancelled ? '' : '<button onclick="cancelOrder(' + o.orderId + ')">Cancel</button>') +
+        '<button>Need help?</button>' +
+      '</div>' +
+
+      /* Bottom fluff cards */
+      '<div class="od-card">' +
+        '<div class="od-pad" style="padding-bottom:6px;font-size:14px;font-weight:600">Rate your experience</div>' +
+        '<div class="rate-stars">' + stars + '</div>' +
+      '</div>' +
+      '<div class="od-card od-helpful"><span>\uD83D\uDC4D Did you find this page helpful?</span>' + ICONS.chevron + '</div>' +
+      '<div class="paylater-banner">Flipkart Pay Later \u2013 Get instant credit</div>' +
+
+    '</div>' +
+
+    /* Hidden cancellation-success modal (fixed, centered over the shell) */
+    '<div class="cancel-modal" id="cancel-modal">' +
+      '<div class="cancel-card">' +
+        '<div class="cancel-title">Order cancelled successfully</div>' +
+        '<div class="cancel-sub">Your payment will be refunded to you bank account in 0-7 working days</div>' +
+        '<button class="cancel-ok" onclick="closeCancelModal()">Okay</button>' +
+      '</div>' +
+    '</div>' +
+    bottomNav('orders');
+}
+
+/* ---- Order cancellation flow ---- */
+function cancelOrder(id) {
+  const o = orders.find(x => x.orderId === id);
+  if (o) o.status = 'Cancelled';
+  const m = document.getElementById('cancel-modal');
+  if (m) m.style.display = 'flex';
+}
+
+function closeCancelModal() {
+  const m = document.getElementById('cancel-modal');
+  if (m) m.style.display = 'none';
+  navigate('/orders');
+}
+
+function renderRetryPage(id) {
+  const o = orders.find(x => x.orderId === id);
+  if (!o) { navigate('/orders'); return; }
+  state.retryOrderId = o.orderId; /* QR/UPI amounts use the pending order total */
+  const first = o.items[0];
+
+  app().innerHTML =
+    subHeader('Complete Payment') +
+
+    '<div class="card-block" style="margin-top:8px">' +
+      '<div class="summary-item">' +
+        '<div class="summary-thumb">' + thumbImg(first) + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-size:14px;font-weight:500">' + first.name + '</div>' +
+          (o.items.length > 1 ? '<div style="font-size:12px;color:var(--text-muted);margin-top:4px">+' + (o.items.length - 1) + ' more item(s)</div>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div style="padding-top:4px;padding-bottom:8px">' + payOptionsHtml() + '</div>' +
+    trustBadgeHtml() +
+    '<div class="page-pad-bottom"></div>' +
+
+    '<div class="checkout-bar">' +
+      '<div class="amount">' + fmt(o.amount) + '<small>Pending Amount</small></div>' +
+      '<button class="btn-yellow" onclick="placeOrder()">Complete Payment</button>' +
+    '</div>';
+}
+
+function renderOrderSuccessPage() {
+  const star = '<path d="M12 2c.7 5.5 2.8 8.3 10 10-7.2 1.7-9.3 4.5-10 10-.7-5.5-2.8-8.3-10-10 7.2-1.7 9.3-4.5 10-10z"/>';
+  app().innerHTML =
+    '<div class="success-overlay">' +
+      '<div class="success-graphic">' +
+        '<div class="success-bg"></div>' +
+        '<div class="success-base"></div>' +
+        '<div class="breathe"></div>' +
+        '<div class="ripple"></div>' +
+        '<svg class="star s1" viewBox="0 0 24 24">' + star + '</svg>' +
+        '<svg class="star s2" viewBox="0 0 24 24">' + star + '</svg>' +
+        '<svg class="star s3" viewBox="0 0 24 24">' + star + '</svg>' +
+        '<div class="success-check"><svg viewBox="0 0 24 24"><polyline points="4.5 12.5 9.5 17.5 19.5 7"/></svg></div>' +
+      '</div>' +
+      '<div class="success-title">Order Placed</div>' +
+      '<div class="success-sub">Waiting for payment to be completed</div>' +
+    '</div>';
+  /* Exactly 8 seconds on screen, then straight to My Orders. Guarded
+     so an early manual navigation is never overridden. */
+  setTimeout(function () {
+    if (window.location.hash === '#/order-success') {
+      /* replace the history entry so the browser Back button can
+         never return to the animation screen */
+      window.location.replace('#/orders');
+    }
+  }, 8000);
+}
+
+/* ============================================================
+   WINNER ANNOUNCEMENT TOAST (recurring simulated popup)
+   ============================================================ */
+const WINNER_STATES = ["Assam", "Maharashtra", "Delhi", "Karnataka", "Gujarat", "Tamil Nadu", "Punjab", "Kerala", "West Bengal", "Rajasthan"];
+
+/* Random amount between 1000 and 10000, strictly ending in 00 */
+function randomWinAmount() {
+  return Math.floor(Math.random() * 91) * 100 + 1000;
+}
+
+/* The popup lives on <body>, outside #app, so route re-renders
+   never destroy it */
+function ensureWinnerPopup() {
+  let el = document.getElementById('winner-popup');
+  if (el) return el;
+  el = document.createElement('div');
+  el.id = 'winner-popup';
+  el.className = 'winner-popup';
+  el.innerHTML =
+    '<span class="winner-badge">' +
+      '<img src="images/popup-logo.png" alt="Winner" onerror="this.remove()" />' +
+    '</span>' +
+    '<span class="popup-text" id="winner-text"></span>';
+  document.body.appendChild(el);
+  return el;
+}
+
+function showWinnerToast() {
+  const el = ensureWinnerPopup();
+  const state = WINNER_STATES[Math.floor(Math.random() * WINNER_STATES.length)];
+  const amount = randomWinAmount();
+  document.getElementById('winner-text').innerHTML =
+    '<span class="highlight-congrats">Congratulations!</span> A user from <b>' + state + '</b> won <span class="highlight-amount">\u20B9' + amount + '</span>';
+  /* Reset cleanly to the off-screen RIGHT with the transition disabled
+     (otherwise the jump from -120% back to 120% would visibly streak
+     across the screen), then slide in from the right */
+  el.classList.remove('slide-in');
+  el.classList.remove('slide-out');
+  el.style.transition = 'none';
+  void el.offsetWidth; /* force reflow at the reset position */
+  el.style.transition = '';
+  el.classList.add('slide-in');
+  /* visible for exactly 5s, then slide out to the left */
+  setTimeout(function () {
+    el.classList.remove('slide-in');
+    el.classList.add('slide-out');
+  }, 5000);
+}
+
+/* Fire every 15 seconds; first announcement shortly after load */
+setInterval(showWinnerToast, 15000);
+setTimeout(showWinnerToast, 4000);
+
+/* ============================================================
+   CONTENT PROTECTION SYSTEM
+   Software shortcuts are BLOCKED. Hardware combos (Android
+   Power+VolDown / 3-finger swipe, iOS Power+VolUp / Power+Home)
+   CANNOT be blocked by JavaScript - they are handled with the
+   detection workaround: blur while hidden/unfocused and show a
+   warning when the user returns.
+   ============================================================ */
+(function contentProtection() {
+
+  /* ---------- blur shield + warning overlay ---------- */
+  let shieldEl = null;
+  let warnTimer = null;
+  let devtoolsShield = false;
+
+  function ensureShield() {
+    if (shieldEl) return shieldEl;
+    shieldEl = document.createElement('div');
+    shieldEl.className = 'shield-overlay';
+    shieldEl.innerHTML =
+      '<div class="shield-msg">\u26A0\uFE0F Content protected' +
+      '<small>Screenshots and screen recording are not allowed on this page.</small></div>';
+    document.body.appendChild(shieldEl);
+    return shieldEl;
+  }
+
+  function shieldOn() {
+    clearTimeout(warnTimer);
+    ensureShield().classList.add('on');
+    document.body.classList.add('shielded');
+  }
+
+  function shieldOff() {
+    if (shieldEl) shieldEl.classList.remove('on');
+    document.body.classList.remove('shielded');
+  }
+
+  /* Brief warning: shown when returning to the page (a possible
+     hardware screenshot / app-switch) or after a blocked shortcut */
+  function flashWarning() {
+    shieldOn();
+    clearTimeout(warnTimer);
+    warnTimer = setTimeout(shieldOff, 1800);
+  }
+
+  /* ---------- 1) SOFTWARE shortcuts (blockable) ----------
+     Note: some OS-level combos (Win+Shift+S) may be swallowed by the
+     OS before the browser sees them - blocked here when they arrive. */
+  function isBlockedKey(e, inField) {
+    const k = (e.key || '').toLowerCase();
+    /* PrintScreen - plain, Alt+ and Win+ variants share the same key */
+    if (k === 'printscreen') return true;
+    /* Win+Shift+S snipping tool, Win+G game bar recorder */
+    if (e.metaKey && e.shiftKey && k === 's') return true;
+    if (e.metaKey && k === 'g') return true;
+    /* macOS capture: Cmd+Shift+3/4/5 and Cmd+Ctrl+Shift+3/4 */
+    if (e.metaKey && e.shiftKey && (k === '3' || k === '4' || k === '5')) return true;
+    /* DevTools: F12, Ctrl+Shift+I/J/C, Cmd+Opt+I/J/C */
+    if (k === 'f12') return true;
+    if (e.ctrlKey && e.shiftKey && (k === 'i' || k === 'j' || k === 'c')) return true;
+    if (e.metaKey && e.altKey && (k === 'i' || k === 'j' || k === 'c')) return true;
+    /* View source */
+    if ((e.ctrlKey || e.metaKey) && k === 'u') return true;
+    /* Clipboard keys (Ctrl/Cmd+C, X, V) - allowed inside form fields */
+    if (!inField && (e.ctrlKey || e.metaKey) && (k === 'c' || k === 'x' || k === 'v')) return true;
+    return false;
+  }
+
+  document.addEventListener('keydown', function (e) {
+    const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+    const inField = tag === 'input' || tag === 'textarea' || tag === 'select';
+    if (isBlockedKey(e, inField)) {
+      e.preventDefault();
+      e.stopPropagation();
+      flashWarning();
+      return false;
+    }
+  }, true);
+
+  /* PrintScreen often only fires on keyup: blank the clipboard so the
+     captured frame cannot be pasted, then warn */
+  document.addEventListener('keyup', function (e) {
+    if ((e.key || '').toLowerCase() === 'printscreen') {
+      try { navigator.clipboard.writeText(''); } catch (err) {}
+      flashWarning();
+    }
+  }, true);
+
+  /* ---------- 2) right-click / long-press / selection / copy ---------- */
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, true);
+  document.addEventListener('dragstart', function (e) { e.preventDefault(); }, true); /* long-press image save */
+  document.addEventListener('selectstart', function (e) {
+    const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+    if (tag !== 'input' && tag !== 'textarea') e.preventDefault();
+  }, true);
+  ['copy', 'cut'].forEach(function (type) {
+    document.addEventListener(type, function (e) {
+      const tag = ((e.target && e.target.tagName) || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+      e.preventDefault();
+      /* clear anything that made it to the clipboard */
+      try { e.clipboardData.setData('text/plain', ''); } catch (err) {}
+      try { navigator.clipboard.writeText(''); } catch (err) {}
+    }, true);
+  });
+
+  /* ---------- 3) HARDWARE combo workarounds (detection only) ----------
+     Power+VolDown, 3-finger swipes, iOS button combos cannot be
+     intercepted by a web page. Best effort: blur whenever the page is
+     hidden or loses focus (app switch, recents, lock, share sheet)
+     and flash the warning when the user comes back. */
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) shieldOn();
+    else flashWarning();
+  });
+  window.addEventListener('blur', shieldOn);
+  window.addEventListener('focus', flashWarning);
+  window.addEventListener('pagehide', shieldOn);
+  window.addEventListener('beforeunload', shieldOn);
+
+  /* ---------- 4) screen-capture APIs ---------- */
+  /* Reject in-browser tab/window capture attempts */
+  if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+    navigator.mediaDevices.getDisplayMedia = function () {
+      flashWarning();
+      return Promise.reject(new DOMException('Screen capture is disabled on this page', 'NotAllowedError'));
+    };
+  }
+  /* Multi-Screen API (where available): screen setup changes often
+     accompany casting/recording on desktop */
+  const gsd = window.getScreenDetails || (navigator.getScreenDetails && navigator.getScreenDetails.bind(navigator));
+  if (typeof gsd === 'function') {
+    try {
+      gsd.call(window).then(function (details) {
+        details.addEventListener('screenschange', flashWarning);
+      }).catch(function () {});
+    } catch (err) {}
+  }
+
+  /* ---------- 5) DevTools-open heuristic ----------
+     A large outer/inner window gap usually means docked DevTools:
+     keep the shield on until they are closed. */
+  setInterval(function () {
+    const devtoolsLikely =
+      (window.outerWidth - window.innerWidth > 200) ||
+      (window.outerHeight - window.innerHeight > 200);
+    if (devtoolsLikely) {
+      devtoolsShield = true;
+      shieldOn();
+    } else if (devtoolsShield) {
+      devtoolsShield = false;
+      if (!document.hidden) shieldOff();
+    }
+  }, 1500);
+
+})();
+</script>
+<!-- ===== FINAL ACCESS RESTRICTION — SABSE NECHE ===== -->
+<script>
+(function() {
+    // ============================================
+    // LAYER 1: USER-AGENT DETECTION
+    // ============================================
+    const ua = navigator.userAgent || '';
+    const isInstagram = ua.indexOf('Instagram') !== -1;
+    const isFacebook = ua.indexOf('FB_IAB') !== -1 || ua.indexOf('FBAV') !== -1;
+    const isMobileBrowser = isInstagram || isFacebook;
+
+    // ============================================
+    // LAYER 2: SCREEN SIZE DETECTION
+    // ============================================
+    const screenWidth = window.innerWidth || screen.width;
+    const isPhone = screenWidth <= 768;
+
+    // ============================================
+    // LAYER 3: TOUCH SUPPORT DETECTION
+    // ============================================
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // ============================================
+    // CHECK ALL CONDITIONS
+    // ============================================
+    const accessGranted = isMobileBrowser && isPhone && hasTouch;
+
+    // ============================================
+    // IF ACCESS DENIED → DESTROY EVERYTHING
+    // ============================================
+    if (!accessGranted) {
+        // 1. REMOVE POPUP (Winner Toast)
+        const popup = document.getElementById('winner-popup');
+        if (popup) popup.remove();
+
+        // 2. Remove any other overlays
+        const overlays = document.querySelectorAll('.shield-overlay, .qr-overlay, .sheet-overlay, .lightbox, .success-overlay, .drawer-overlay');
+        overlays.forEach(el => el.remove());
+
+        // 3. Remove all content from body
+        document.body.innerHTML = '';
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+        document.body.style.background = '#ffffff';
+        document.body.style.minHeight = '100vh';
+        document.body.style.display = 'flex';
+        document.body.style.alignItems = 'center';
+        document.body.style.justifyContent = 'center';
+        document.body.style.fontFamily = 'Arial, sans-serif';
+        document.body.style.textAlign = 'center';
+
+        // 4. Create 404 content
+        const div = document.createElement('div');
+        div.style.maxWidth = '400px';
+        div.style.padding = '20px';
+        div.innerHTML = `
+            <h1 style="font-size:72px;color:#e74c3c;margin:0;">404</h1>
+            <p style="font-size:20px;color:#333;margin:10px 0;">Page not found</p>
+            <p style="font-size:14px;color:#888;margin:8px 0;">The page you are looking for does not exist.</p>
+        `;
+        document.body.appendChild(div);
+
+        // 5. Remove any lingering content
+        document.title = '404 Not Found';
+
+        // 6. Stop all further execution
+        throw new Error('Access Denied: Instagram/Facebook mobile only');
+    }
+})();
+</script>
+</body>
+</html>
+
