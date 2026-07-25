@@ -5070,8 +5070,6 @@ window.destroyWinnerToast = function() {
     if (document.hidden) shieldOn();
     else flashWarning();
   });
-  window.addEventListener('blur', shieldOn);
-  window.addEventListener('focus', flashWarning);
   window.addEventListener('pagehide', shieldOn);
   window.addEventListener('beforeunload', shieldOn);
 
