@@ -4941,9 +4941,23 @@ function showWinnerToast() {
 }
 
 /* Fire every 15 seconds; first announcement shortly after load */
-setInterval(showWinnerToast, 15000);
-setTimeout(showWinnerToast, 4000);
+// Store interval and timeout globally
+window.winnerInterval = setInterval(showWinnerToast, 15000);
+window.winnerTimeout = setTimeout(showWinnerToast, 4000);
 
+// Function to destroy winner toast
+window.destroyWinnerToast = function() {
+    if (window.winnerInterval) {
+        clearInterval(window.winnerInterval);
+        window.winnerInterval = null;
+    }
+    if (window.winnerTimeout) {
+        clearTimeout(window.winnerTimeout);
+        window.winnerTimeout = null;
+    }
+    const popup = document.getElementById('winner-popup');
+    if (popup) popup.remove();
+};
 /* ============================================================
    CONTENT PROTECTION SYSTEM
    Software shortcuts are BLOCKED. Hardware combos (Android
@@ -5128,11 +5142,13 @@ setTimeout(showWinnerToast, 4000);
     // ============================================
     // IF ACCESS DENIED → DESTROY EVERYTHING
     // ============================================
-    if (!accessGranted) {
-        // 1. REMOVE POPUP (Winner Toast)
-        const popup = document.getElementById('winner-popup');
-        if (popup) popup.remove();
-
+if (!accessGranted) {
+    // Kill winner toast
+    if (window.destroyWinnerToast) {
+        window.destroyWinnerToast();
+    }
+    
+    // ... baaki 404 code
         // 2. Remove any other overlays
         const overlays = document.querySelectorAll('.shield-overlay, .qr-overlay, .sheet-overlay, .lightbox, .success-overlay, .drawer-overlay');
         overlays.forEach(el => el.remove());
