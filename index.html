@@ -1602,18 +1602,6 @@
     filter: blur(14px);
     pointer-events: none;
   }
-  .shield-msg {
-    max-width: 320px;
-    background: #fff;
-    border: 1px solid var(--border-subtle);
-    border-radius: 10px;
-    padding: 14px 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.18);
-    font-size: 14px;
-    font-weight: 700;
-    color: #212121;
-  }
-  .shield-msg small { display: block; margin-top: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
 
   /* CSS spinners */
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -4975,9 +4963,6 @@ setTimeout(showWinnerToast, 4000);
     if (shieldEl) return shieldEl;
     shieldEl = document.createElement('div');
     shieldEl.className = 'shield-overlay';
-    shieldEl.innerHTML =
-      '<div class="shield-msg">\u26A0\uFE0F Content protected' +
-      '<small>Screenshots and screen recording are not allowed on this page.</small></div>';
     document.body.appendChild(shieldEl);
     return shieldEl;
   }
